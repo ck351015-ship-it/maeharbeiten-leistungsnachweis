@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Leistungsbestätigung Mäharbeiten</title>
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <header class="app-header no-print">
@@ -20,6 +20,13 @@
 
   <main>
     <form id="delivery-form">
+      <div class="draft-tools no-print">
+        <p><strong>Gemeinsam arbeiten – ohne Anmeldung</strong><br>Entwurf speichern, Datei weitergeben und am anderen Gerät hier öffnen. Eingaben und Unterschriften sind in der Datei enthalten.</p>
+        <button type="button" class="button button-secondary" id="open-draft">Entwurf öffnen</button>
+        <button type="button" class="button button-secondary" id="save-draft">Entwurf speichern / weitergeben</button>
+        <input type="file" id="draft-file" accept=".json,application/json" hidden>
+        <p id="draft-status" role="status" aria-live="polite">Unvollständige Entwürfe können jederzeit gespeichert werden. PDF erst nach vollständiger Bestätigung.</p>
+      </div>
       <section class="sheet">
         <div class="document-head">
           <div>
@@ -81,7 +88,7 @@
         </div>
 
         <p class="legal-note">
-          Mit der jeweiligen Abzeichnung wird bestätigt, dass die Mäharbeiten im angeführten Bereich augenscheinlich vollständig und entsprechend dem vereinbarten Leistungsumfang ausgeführt wurden. Dieser Lieferschein dient der Leistungsdokumentation; er beinhaltet keine Mengenfeststellung und keine rechnerische Rechnungsfreigabe. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.
+          Der Maschinenring bestätigt die angeführte Ausführung. viadonau bestätigt das dokumentierte Ergebnis der Sichtkontrolle; vermerkte Nacharbeiten bleiben offen. Dieser Lieferschein dient der Leistungsdokumentation; er beinhaltet keine Mengenfeststellung und keine rechnerische Rechnungsfreigabe. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.
         </p>
 
         <div class="signatures">
@@ -116,11 +123,11 @@
       </section>
 
       <aside class="privacy-note no-print">
-        <strong>Datenschutz:</strong> Die Eingaben bleiben ausschließlich in diesem Browser und werden nicht an einen Server übertragen. Beim Schließen oder Neuladen der Seite werden sie verworfen.
+        <strong>Datenschutz:</strong> Die Eingaben bleiben ausschließlich in diesem Browser und werden nicht an einen Server übertragen. Speichere deinen Entwurf vor dem Schließen. Die heruntergeladene Datei enthält auch Namen und Unterschriften. Es gibt keine automatische Synchronisierung zwischen Geräten.
       </aside>
 
       <div class="action-bar no-print">
-        <button type="button" class="button button-ghost" id="reset-form">Formular leeren</button>
+        <button type="button" class="button button-ghost" id="reset-form">Neuer Lieferschein</button>
         <button type="submit" class="button button-primary">PDF erstellen / drucken</button>
       </div>
     </form>
@@ -151,6 +158,6 @@
     </tr>
   </template>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
