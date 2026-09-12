@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#005f73">
+  <title>Leistungsbestätigung Mäharbeiten</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header no-print">
+    <div class="brand" aria-label="viadonau">
+      <span class="brand-mark">via</span><span>donau</span>
+    </div>
+    <div>
+      <p class="eyebrow">Digitale Leistungsdokumentation</p>
+      <h1>Mäharbeiten</h1>
+    </div>
+  </header>
+
+  <main>
+    <form id="delivery-form">
+      <section class="sheet">
+        <div class="document-head">
+          <div>
+            <p class="eyebrow">Lieferschein</p>
+            <h2>Leistungsbestätigung – Mäharbeiten</h2>
+          </div>
+          <div class="document-brand" aria-hidden="true"><b>via</b>donau</div>
+        </div>
+
+        <div class="form-grid master-data">
+          <label>
+            Auftragnehmer
+            <input name="contractor" value="Maschinenring" required>
+          </label>
+          <label>
+            Auftrag / Rahmenvertrag
+            <input name="contract" placeholder="Geschäftszahl oder Bestellnummer" required>
+          </label>
+          <label>
+            Mähdurchgang
+            <select name="cycle" required>
+              <option value="">Bitte auswählen</option>
+              <option>1. Mähdurchgang</option>
+              <option>2. Mähdurchgang</option>
+              <option>3. Mähdurchgang</option>
+              <option>Sonderdurchgang</option>
+            </select>
+          </label>
+          <fieldset class="date-range">
+            <legend>Ausführungszeitraum</legend>
+            <label>von <input type="date" name="periodFrom" required></label>
+            <label>bis <input type="date" name="periodTo" required></label>
+          </fieldset>
+        </div>
+
+        <div class="section-title">
+          <div>
+            <h3>Streckenabschnitte</h3>
+            <p>Jeden kontrollierten Bereich einzeln erfassen und abzeichnen.</p>
+          </div>
+          <button class="button button-secondary no-print" type="button" id="add-row">+ Bereich hinzufügen</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Bereich / Streckenabschnitt</th>
+                <th>Abgeschlossen</th>
+                <th>Leistung</th>
+                <th>Anmerkung / Nacharbeit bis</th>
+                <th>MR<br>Kürzel</th>
+                <th>viadonau<br>Kürzel</th>
+                <th class="no-print"><span class="sr-only">Aktion</span></th>
+              </tr>
+            </thead>
+            <tbody id="sections"></tbody>
+          </table>
+        </div>
+
+        <p class="legal-note">
+          Mit der jeweiligen Abzeichnung wird bestätigt, dass die Mäharbeiten im angeführten Bereich augenscheinlich vollständig und entsprechend dem vereinbarten Leistungsumfang ausgeführt wurden. Dieser Lieferschein dient der Leistungsdokumentation; er beinhaltet keine Mengenfeststellung und keine rechnerische Rechnungsfreigabe. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.
+        </p>
+
+        <div class="signatures">
+          <section class="signature-card">
+            <h3>Streckenverantwortlicher Maschinenring</h3>
+            <div class="signature-meta">
+              <label>Name <input name="mrName" required></label>
+              <label>Datum <input type="date" name="mrDate" required></label>
+            </div>
+            <div class="signature-pad">
+              <canvas id="mr-signature" aria-label="Unterschrift Maschinenring"></canvas>
+              <span class="signature-placeholder">Hier unterschreiben</span>
+            </div>
+            <button type="button" class="text-button no-print" data-clear-signature="mr-signature">Unterschrift löschen</button>
+          </section>
+
+          <section class="signature-card">
+            <h3>Gewässermeister viadonau</h3>
+            <div class="signature-meta">
+              <label>Name <input name="vdName" required></label>
+              <label>Datum <input type="date" name="vdDate" required></label>
+            </div>
+            <div class="signature-pad">
+              <canvas id="vd-signature" aria-label="Unterschrift viadonau"></canvas>
+              <span class="signature-placeholder">Hier unterschreiben</span>
+            </div>
+            <button type="button" class="text-button no-print" data-clear-signature="vd-signature">Unterschrift löschen</button>
+          </section>
+        </div>
+      </section>
+
+      <aside class="privacy-note no-print">
+        <strong>Datenschutz:</strong> Die Eingaben bleiben ausschließlich in diesem Browser und werden nicht an einen Server übertragen. Beim Schließen oder Neuladen der Seite werden sie verworfen.
+      </aside>
+
+      <div class="action-bar no-print">
+        <button type="button" class="button button-ghost" id="reset-form">Formular leeren</button>
+        <button type="submit" class="button button-primary">PDF erstellen / drucken</button>
+      </div>
+    </form>
+  </main>
+
+  <template id="section-row-template">
+    <tr>
+      <td data-label="Bereich / Streckenabschnitt">
+        <textarea name="area[]" rows="2" placeholder="z. B. Treppelweg Strom-km 2160,0–2162,5" required></textarea>
+      </td>
+      <td data-label="Abgeschlossen">
+        <input type="date" name="completed[]" required>
+      </td>
+      <td data-label="Leistung">
+        <select name="status[]" required>
+          <option value="">Bitte wählen</option>
+          <option>i. O.</option>
+          <option>Nacharbeit</option>
+        </select>
+      </td>
+      <td data-label="Anmerkung / Nacharbeit bis">
+        <textarea name="note[]" rows="2" placeholder="optional"></textarea>
+        <input class="follow-up-date" type="date" name="followUp[]" aria-label="Nacharbeit bis">
+      </td>
+      <td data-label="MR – Kürzel"><input name="mrInitials[]" maxlength="6" required></td>
+      <td data-label="viadonau – Kürzel"><input name="vdInitials[]" maxlength="6" required></td>
+      <td class="row-actions no-print"><button type="button" class="delete-row" aria-label="Bereich entfernen">×</button></td>
+    </tr>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
