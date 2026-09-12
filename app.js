@@ -39,27 +39,21 @@ function setupSignature(canvas) {
   let drawing = false;
   let ink = false;
 
-  function resize() {
-    const image = ink ? canvas.toDataURL() : null;
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = Math.round(rect.width * ratio);
-    canvas.height = Math.round(rect.height * ratio);
-    context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    context.lineWidth = 2;
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-    context.strokeStyle = '#17333a';
-    if (image) {
-      const restored = new Image();
-      restored.onload = () => context.drawImage(restored, 0, 0, rect.width, rect.height);
-      restored.src = image;
-    }
-  }
+  // A fixed drawing coordinate system prevents print/viewport changes
+  // from resampling or stretching an existing signature.
+  canvas.width = 1000;
+  canvas.height = 250;
+  context.lineWidth = 4;
+  context.lineCap = 'round';
+  context.lineJoin = 'round';
+  context.strokeStyle = '#17333a';
 
   function point(event) {
     const rect = canvas.getBoundingClientRect();
-    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    return {
+      x: (event.clientX - rect.left) * canvas.width / rect.width,
+      y: (event.clientY - rect.top) * canvas.height / rect.height
+    };
   }
 
   canvas.addEventListener('pointerdown', event => {
@@ -79,16 +73,19 @@ function setupSignature(canvas) {
     wrapper.classList.add('has-ink');
   });
 
-  canvas.addEventListener('pointerup', () => { drawing = false; });
+  canvas.addEventListener('pointerup', () => {
+    drawing = false;
+    wrapper.querySelector('.signature-print').src = canvas.toDataURL('image/png');
+  });
   canvas.addEventListener('pointercancel', () => { drawing = false; });
-  window.addEventListener('resize', resize);
-  resize();
+
 
   return {
     clear() {
       context.clearRect(0, 0, canvas.width, canvas.height);
       ink = false;
       wrapper.classList.remove('has-ink');
+      wrapper.querySelector('.signature-print').src = canvas.toDataURL('image/png');
     }
   };
 }
@@ -129,12 +126,13 @@ function preparePrintSignatures() {
 
 window.addEventListener('beforeprint', preparePrintSignatures);
 
-form.addEventListener('submit', event => {
+form.addEventListener('submit', async event => {
   event.preventDefault();
   if (!form.reportValidity()) return;
   const contract = form.elements.contract.value.trim();
   document.title = `Leistungsbestaetigung_Maeharbeiten_${contract || 'Entwurf'}`.replace(/[^a-zA-Z0-9_-]+/g, '_');
   preparePrintSignatures();
+  await Promise.all(Array.from(document.querySelectorAll('.signature-print'), image => image.decode()));
   window.print();
 });
 
