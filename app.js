@@ -119,11 +119,22 @@ function setDefaultDates() {
   });
 }
 
+function preparePrintSignatures() {
+  document.querySelectorAll('.signature-pad').forEach(pad => {
+    const canvas = pad.querySelector('canvas');
+    const image = pad.querySelector('.signature-print');
+    image.src = canvas.toDataURL('image/png');
+  });
+}
+
+window.addEventListener('beforeprint', preparePrintSignatures);
+
 form.addEventListener('submit', event => {
   event.preventDefault();
   if (!form.reportValidity()) return;
   const contract = form.elements.contract.value.trim();
   document.title = `Leistungsbestaetigung_Maeharbeiten_${contract || 'Entwurf'}`.replace(/[^a-zA-Z0-9_-]+/g, '_');
+  preparePrintSignatures();
   window.print();
 });
 
