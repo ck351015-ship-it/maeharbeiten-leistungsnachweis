@@ -183,3 +183,18 @@ td input, td select, td textarea { margin: 0; font-size: 12px; }
 .draft-tools button { margin: 0 8px 8px 0; }
 #draft-status { margin: 8px 0 0; color: var(--brand-dark); }
 .action-bar { flex-wrap: wrap; }
+
+/* Original logo files; the slot trims only the Maschinenring file's white margins. */
+.document-logos { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 14px; }
+.logo-slot { position: relative; width: 240px; height: 64px; overflow: hidden; flex: 0 1 240px; }
+.logo-slot img { display: block; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: auto; }
+.logo-viadonau { width: 92%; }
+.logo-maschinenring { width: 100%; }
+@media screen and (max-width: 760px) {
+  .document-logos { gap: 16px; }
+  .logo-slot { height: 52px; }
+}
+@media print {
+  .document-logos { margin-bottom: 3mm; break-inside: avoid; }
+  .logo-slot { width: 55mm; flex-basis: 55mm; height: 13mm; }
+}
