@@ -141,6 +141,7 @@ function setDefaultDates() {
 }
 
 function preparePrintSignatures() {
+  document.querySelector('#additional-notes-print').textContent = form.elements.additionalNotes.value || '–';
   document.querySelectorAll('.signature-pad').forEach(pad => {
     const canvas = pad.querySelector('canvas');
     const image = pad.querySelector('.signature-print');
@@ -153,7 +154,7 @@ window.addEventListener('beforeprint', preparePrintSignatures);
 form.addEventListener('submit', async event => {
   event.preventDefault();
   if (!form.reportValidity()) return;
-  const contract = form.elements.contract.value.trim();
+  const contract = [form.elements.contract.value, form.elements.year.value].filter(Boolean).join('_');
   document.title = `Leistungsbestaetigung_Maeharbeiten_${contract || 'Entwurf'}`.replace(/[^a-zA-Z0-9_-]+/g, '_');
   if ([...signaturePads.values()].some(pad => !pad.export())) {
     showStatus('Für den fertigen PDF-Nachweis fehlen noch Unterschriften. Einen unvollständigen Entwurf kannst du jederzeit speichern.');
@@ -170,8 +171,8 @@ setDefaultDates();
 // Draft files are local handoffs, not a shared database or verified signatures.
 let draftId = crypto.randomUUID();
 let dirty = false;
-const masterNames = ['contractor', 'contract', 'cycle', 'periodFrom', 'periodTo', 'mrName', 'mrDate', 'vdName', 'vdDate'];
-const sectionNames = ['area', 'completed', 'status', 'note', 'followUp', 'mrInitials', 'vdInitials'];
+const masterNames = ['contractor', 'contract', 'year', 'additionalNotes', 'cycle', 'periodFrom', 'periodTo', 'mrName', 'mrDate', 'vdName', 'vdDate'];
+const sectionNames = ['area', 'completed', 'status', 'note', 'followUp'];
 const signatureIds = ['mr-signature', 'vd-signature'];
 function showStatus(message) { document.querySelector('#draft-status').textContent = message; }
 function invalidateSignatures(who) {
@@ -187,7 +188,7 @@ function invalidateSignatures(who) {
 function fieldChanged(event) {
   const name = event.target.name;
   if (!name) return;
-  const controls = ['status[]', 'note[]', 'followUp[]', 'vdInitials[]', 'vdName', 'vdDate'];
+  const controls = ['status[]', 'note[]', 'followUp[]', 'vdName', 'vdDate'];
   invalidateSignatures(controls.includes(name) ? 'vd' : 'both');
 }
 form.addEventListener('input', fieldChanged);
@@ -197,7 +198,7 @@ window.addEventListener('beforeunload', event => {
 });
 function collectDraft() {
   return {
-    format: 'viadonau-maeharbeiten', version: 1, id: draftId,
+    format: 'viadonau-maeharbeiten', version: 2, id: draftId,
     savedAt: new Date().toISOString(),
     fields: Object.fromEntries(masterNames.map(name => [name, form.elements[name].value])),
     sections: Array.from(rows.children, row => Object.fromEntries(sectionNames.map(name => [name, row.querySelector(`[name="${name}[]"]`).value]))),
@@ -205,8 +206,8 @@ function collectDraft() {
   };
 }
 function validateDraft(data) {
-  const fail = () => { throw new Error('Die Datei ist kein gültiger Lieferschein-Entwurf (Version 1).'); };
-  if (!data || data.format !== 'viadonau-maeharbeiten' || data.version !== 1 ||
+  const fail = () => { throw new Error('Die Datei ist kein gültiger Lieferschein-Entwurf (Version 1 oder 2).'); };
+  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2].includes(data.version) ||
       typeof data.id !== 'string' || data.id.length > 100 || !data.fields || !data.signatures ||
       !Array.isArray(data.sections) || data.sections.length < 1 || data.sections.length > 200) fail();
   function fields(value, names) {
@@ -218,12 +219,16 @@ function validateDraft(data) {
           !Number.isFinite(Date.parse(value[name])) || new Date(value[name]).toISOString().slice(0, 10) !== value[name])) fail();
     }
   }
-  fields(data.fields, masterNames);
+  fields(data.fields, data.version === 1 ? masterNames.filter(name => !['year', 'additionalNotes'].includes(name)) : masterNames);
+  if (data.version === 2 && (
+    !['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland'].includes(data.fields.contractor) ||
+    !['', '1. Leistungsabruf', '2. Leistungsabruf', '3. Leistungsabruf'].includes(data.fields.contract) ||
+    !['', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033'].includes(data.fields.year))) fail();
   if (!['', '1. Mähdurchgang', '2. Mähdurchgang', '3. Mähdurchgang', 'Sonderdurchgang'].includes(data.fields.cycle)) fail();
   for (const row of data.sections) {
     fields(row, sectionNames);
     if (!['', 'i. O.', 'Nacharbeit'].includes(row.status) ||
-        (row.status !== 'Nacharbeit' && row.followUp) || row.mrInitials.length > 6 || row.vdInitials.length > 6) fail();
+        (row.status !== 'Nacharbeit' && row.followUp)) fail();
   }
   for (const id of signatureIds) {
     const image = data.signatures[id];
@@ -251,7 +256,7 @@ function saveDraft() {
   if (blob.size > 6000000) { showStatus('Entwurf zu groß. Bitte auf mehrere Lieferscheine aufteilen.'); return; }
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  const name = (data.fields.contract || 'Entwurf').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60);
+  const name = ([data.fields.contract || 'Entwurf', data.fields.year].filter(Boolean).join('_')).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60);
   link.href = url;
   link.download = `Lieferschein_${name}_${data.savedAt.slice(0, 19).replace(/:/g, '-')}.json`;
   document.body.append(link);
@@ -268,7 +273,9 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
   if (!file) return;
   try {
     if (file.size > 6000000) throw new Error('Die Datei ist zu groß (maximal 6 MB).');
-    const data = validateDraft(JSON.parse(await file.text()));
+    let data = validateDraft(JSON.parse(await file.text()));
+    const migrated = data.version === 1;
+    if (migrated) data = migrateLegacyDraft(data);
     const images = await decodeSignatures(data);
     if (dirty && !window.confirm('Ungesicherte Eingaben durch den gespeicherten Entwurf ersetzen?')) return;
     masterNames.forEach(name => { form.elements[name].value = data.fields[name]; });
@@ -277,10 +284,29 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
     signatureIds.forEach((id, i) => signaturePads.get(id).restore(images[i]));
     draftId = data.id;
     dirty = false;
-    showStatus('Entwurf geöffnet – einschließlich gespeicherter Unterschriften. Nach der Bearbeitung erneut speichern und die neue Datei weitergeben.');
+    showStatus(migrated
+      ? 'Älterer Entwurf übernommen. Bitte Standort, Leistungsabruf und Jahr prüfen und erneut unterschreiben. Frühere freie Auftragsangaben stehen in den Anmerkungen.'
+      : 'Entwurf geöffnet – einschließlich gespeicherter Unterschriften. Nach der Bearbeitung erneut speichern und die neue Datei weitergeben.');
   } catch (error) {
     showStatus('Entwurf konnte nicht geöffnet werden. ' + (error instanceof SyntaxError ? 'Die Datei enthält kein gültiges JSON.' : error.message) + ' Bestehende Eingaben bleiben erhalten.');
   } finally {
     event.target.value = '';
   }
 });
+
+function migrateLegacyDraft(data) {
+  const old = data.fields;
+  const contractors = ['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland'];
+  const contracts = ['', '1. Leistungsabruf', '2. Leistungsabruf', '3. Leistungsabruf'];
+  const contractor = contractors.includes(old.contractor) ? old.contractor : '';
+  const contract = contracts.includes(old.contract) ? old.contract : '';
+  const notes = [];
+  if (old.contractor && !contractor) notes.push('Auftragnehmer im bisherigen Entwurf: ' + old.contractor);
+  if (old.contract && !contract) notes.push('Auftrag im bisherigen Entwurf: ' + old.contract);
+  const year = (old.periodFrom || '').slice(0, 4);
+  return validateDraft({ ...data, version: 2,
+    fields: { ...old, contractor, contract, year: /^(202[6-9]|203[0-3])$/.test(year) ? year : '', additionalNotes: notes.join('\n') },
+    sections: data.sections.map(row => Object.fromEntries(sectionNames.map(name => [name, row[name]]))),
+    signatures: { 'mr-signature': null, 'vd-signature': null }
+  });
+}

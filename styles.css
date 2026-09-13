@@ -80,11 +80,11 @@ table { width: 100%; min-width: 980px; border-collapse: collapse; table-layout: 
 th { padding: 10px 8px; text-align: left; background: var(--brand); color: white; font-size: 11px; line-height: 1.25; }
 td { padding: 7px; border-bottom: 1px solid var(--line); vertical-align: top; }
 tr:last-child td { border-bottom: 0; }
-th:nth-child(1) { width: 23%; }
-th:nth-child(2) { width: 13%; }
-th:nth-child(3) { width: 12%; }
-th:nth-child(4) { width: 24%; }
-th:nth-child(5), th:nth-child(6) { width: 11%; }
+th:nth-child(1) { width: 34%; }
+th:nth-child(2) { width: 17%; }
+th:nth-child(3) { width: 17%; }
+th:nth-child(4) { width: 27%; }
+
 th:last-child { width: 5%; }
 td input, td select, td textarea { margin: 0; font-size: 12px; }
 .follow-up-date { margin-top: 6px; }
@@ -154,11 +154,11 @@ td input, td select, td textarea { margin: 0; font-size: 12px; }
   th { padding: 6px; font-size: 8px; }
   td { padding: 4px; }
   td input, td select, td textarea { font-size: 8.5px; }
-  th:nth-child(1) { width: 24%; }
-  th:nth-child(2) { width: 13%; }
-  th:nth-child(3) { width: 11%; }
+  th:nth-child(1) { width: 34%; }
+  th:nth-child(2) { width: 17%; }
+  th:nth-child(3) { width: 17%; }
   th:nth-child(4) { width: 27%; }
-  th:nth-child(5), th:nth-child(6) { width: 12.5%; }
+  th:nth-child(4) { width: 32%; }
   .legal-note { margin: 10px 0; padding: 7px 10px; font-size: 7.5px; }
   .signatures { gap: 12px; break-inside: avoid; }
   .signature-card { padding: 9px; }
@@ -197,4 +197,18 @@ td input, td select, td textarea { margin: 0; font-size: 12px; }
 @media print {
   .document-logos { margin-bottom: 3mm; break-inside: avoid; }
   .logo-slot { width: 55mm; flex-basis: 55mm; height: 13mm; }
+}
+
+.call-off { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 10px; }
+.call-off legend { margin-bottom: 6px; }
+.call-off label { min-width: 0; }
+.additional-notes { margin: 20px 0; }
+.additional-notes label { display: block; font-size: 14px; color: var(--ink); }
+.notes-print { display: none; }
+@media print {
+  .call-off { gap: 6px; }
+  .additional-notes { margin: 10px 0; }
+  .additional-notes label { font-size: 10px; break-after: avoid; }
+  .additional-notes textarea { display: none; }
+  .notes-print { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 9px; line-height: 1.45; margin-top: 4px; }
 }

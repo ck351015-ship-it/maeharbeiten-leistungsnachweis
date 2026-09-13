@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Leistungsbestätigung Mäharbeiten</title>
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <header class="app-header no-print">
@@ -39,12 +39,38 @@
         <div class="form-grid master-data">
           <label>
             Auftragnehmer
-            <input name="contractor" value="Maschinenring" required>
+            <select name="contractor" required>
+              <option value="">Bitte auswählen</option>
+              <option>Maschinenring Donauland</option>
+              <option>Maschinenring OÖ Zentralraum</option>
+              <option>Maschinenring Ried</option>
+              <option>Maschinenring Granitland</option>
+            </select>
           </label>
-          <label>
-            Auftrag / Rahmenvertrag
-            <input name="contract" placeholder="Geschäftszahl oder Bestellnummer" required>
-          </label>
+          <fieldset class="call-off">
+            <legend>Auftrag</legend>
+            <label>Leistungsabruf
+              <select name="contract" required>
+                <option value="">Bitte auswählen</option>
+                <option>1. Leistungsabruf</option>
+                <option>2. Leistungsabruf</option>
+                <option>3. Leistungsabruf</option>
+              </select>
+            </label>
+            <label>Jahr
+              <select name="year" required>
+                <option value="">Bitte auswählen</option>
+                <option>2026</option>
+                <option>2027</option>
+                <option>2028</option>
+                <option>2029</option>
+                <option>2030</option>
+                <option>2031</option>
+                <option>2032</option>
+                <option>2033</option>
+              </select>
+            </label>
+          </fieldset>
           <label>
             Mähdurchgang
             <select name="cycle" required>
@@ -65,7 +91,7 @@
         <div class="section-title">
           <div>
             <h3>Streckenabschnitte</h3>
-            <p>Jeden kontrollierten Bereich einzeln erfassen und abzeichnen.</p>
+            <p>Jeden Bereich einzeln erfassen und den Leistungsstand dokumentieren.</p>
           </div>
           <button class="button button-secondary no-print" type="button" id="add-row">+ Bereich hinzufügen</button>
         </div>
@@ -78,14 +104,18 @@
                 <th>Abgeschlossen</th>
                 <th>Leistung</th>
                 <th>Anmerkung / Nacharbeit bis</th>
-                <th>MR<br>Kürzel</th>
-                <th>viadonau<br>Kürzel</th>
                 <th class="no-print"><span class="sr-only">Aktion</span></th>
               </tr>
             </thead>
             <tbody id="sections"></tbody>
           </table>
         </div>
+
+        <section class="additional-notes">
+          <label for="additional-notes">Regieleistungen und sonstige Anmerkungen</label>
+          <textarea id="additional-notes" name="additionalNotes" rows="4" maxlength="10000" placeholder="z. B. zusätzliche Arbeiten, besondere Vorkommnisse oder Hinweise zur Ausführung"></textarea>
+          <div id="additional-notes-print" class="notes-print"></div>
+        </section>
 
         <p class="legal-note">
           Der Maschinenring bestätigt die angeführte Ausführung. viadonau bestätigt das dokumentierte Ergebnis der Sichtkontrolle; vermerkte Nacharbeiten bleiben offen. Dieser Lieferschein dient der Leistungsdokumentation; er beinhaltet keine Mengenfeststellung und keine rechnerische Rechnungsfreigabe. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.
@@ -152,12 +182,10 @@
         <textarea name="note[]" rows="2" placeholder="optional"></textarea>
         <input class="follow-up-date" type="date" name="followUp[]" aria-label="Nacharbeit bis">
       </td>
-      <td data-label="MR – Kürzel"><input name="mrInitials[]" maxlength="6" required></td>
-      <td data-label="viadonau – Kürzel"><input name="vdInitials[]" maxlength="6" required></td>
       <td class="row-actions no-print"><button type="button" class="delete-row" aria-label="Bereich entfernen">×</button></td>
     </tr>
   </template>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
