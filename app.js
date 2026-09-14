@@ -170,7 +170,9 @@ function preparePrintSignatures() {
     if (['additionalNotes', 'vdComment'].includes(field.name) || field.hidden || field.closest('[hidden]')) return;
     const value = document.createElement('span');
     value.className = 'print-value';
-    let text = field.value;
+    let text = field.tagName === 'SELECT' && field.value
+      ? field.selectedOptions[0].textContent
+      : field.value;
     if (field.type === 'date' && text) text = text.split('-').reverse().join('.');
     value.textContent = text || '________________';
     field.after(value);

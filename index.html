@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Lieferschein – Streckenpflegearbeiten – Rahmenvereinbarung 2023–2028 WEST</title>
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
   <header class="app-header no-print">
@@ -158,42 +158,58 @@
     <tr>
       <td data-label="Durchgeführte Leistung / Bereich">
         <label><span class="sr-only">Leistung</span>
-          <select name="service[]" aria-label="Leistung"><option value="">Bitte auswählen / freie Eingabe</option>
-            <option>Kilometerzeichen Ausmähen</option>
-            <option>Hektometerzeichen Ausmähen</option>
-            <option>Schifffahrtszeichen Ausmähen</option>
-            <option>Fixpunkte Ausmähen</option>
-            <option>Reinigen Hektometer</option>
-            <option>Reinigen Kilometerzeichen</option>
-            <option>Reinigen Fixpunkte</option>
-            <option>Reinigen Schifffahrtszeichen</option>
-            <option>Streichen HM-Zeichen</option>
-            <option>Streichen Fixpunkte</option>
-            <option>Streichen Kilometerzeichen</option>
-            <option>Streichen Schifffahrtszeichen SÄULE</option>
-            <option>Reinigen + Streichen Heftpoller</option>
-            <option>Sichtfenster Hektometer</option>
-            <option>Sichtfenster Kilometerzeichen</option>
-            <option>Sichtfenster Schifffahrtszeichen</option>
-            <option>Sichtfenster Fixpunkte</option>
-            <option>Ländenböschungen 3x jährlich mulchen</option>
-            <option>Dämme 2x jährlich mulchen VHP/via 50/50 (Melk)</option>
-            <option>Dämme 2x jährlich mulchen via</option>
-            <option>Dämme 2x jährlich mulchen via / VHP Oh, Abw, Wall</option>
-            <option>Dämme 2x jährlich mähen VHP Melk / via 50/50</option>
-            <option>Dämme 2x jährlich mähen via</option>
-            <option>Dämme 2x jährlich mähen via (VHP Wall)</option>
-            <option>Ökologische Flächen 2x mähen</option>
-            <option>Mähgut von Fläche entfernen VHP Melk / via 50/50</option>
-            <option>Mähgut von Fläche entfernen via</option>
-            <option>Mähgut von Fläche entfernen via (VHP Wall)</option>
-            <option>Mähgut entsorgen VHP Melk / via 50/50</option>
-            <option>Mähgut entsorgen via</option>
-            <option>Mähgut entsorgen via (VHP Wall)</option>
-            <option>Bankettstreifen 1. Mahd</option>
-            <option>Bankettstreifen Zwischenmahd</option>
-            <option>Bankettstreifen 2. Mahd</option>
-            <option>Herstellen Lichtraumprofil</option>
+          <select name="service[]" aria-label="Leistung"><option value="">Bitte auswählen</option>
+            <optgroup label="Ausmähen">
+              <option value="Kilometerzeichen Ausmähen">Kilometerzeichen – Ausmähen</option>
+              <option value="Hektometerzeichen Ausmähen">Hektometerzeichen – Ausmähen</option>
+              <option value="Schifffahrtszeichen Ausmähen">Schifffahrtszeichen – Ausmähen</option>
+              <option value="Fixpunkte Ausmähen">Fixpunkte – Ausmähen</option>
+            </optgroup>
+            <optgroup label="Sichtfenster">
+              <option value="Sichtfenster Kilometerzeichen">Kilometerzeichen – Sichtfenster</option>
+              <option value="Sichtfenster Hektometer">Hektometerzeichen – Sichtfenster</option>
+              <option value="Sichtfenster Schifffahrtszeichen">Schifffahrtszeichen – Sichtfenster</option>
+              <option value="Sichtfenster Fixpunkte">Fixpunkte – Sichtfenster</option>
+            </optgroup>
+            <optgroup label="Reinigen">
+              <option value="Reinigen Kilometerzeichen">Kilometerzeichen – Reinigen</option>
+              <option value="Reinigen Hektometer">Hektometerzeichen – Reinigen</option>
+              <option value="Reinigen Schifffahrtszeichen">Schifffahrtszeichen – Reinigen</option>
+              <option value="Reinigen Fixpunkte">Fixpunkte – Reinigen</option>
+            </optgroup>
+            <optgroup label="Streichen / Reinigen und Streichen">
+              <option value="Streichen Kilometerzeichen">Kilometerzeichen – Streichen</option>
+              <option value="Streichen HM-Zeichen">Hektometerzeichen – Streichen</option>
+              <option value="Streichen Schifffahrtszeichen SÄULE">Schifffahrtszeichen, Säule – Streichen (Stück)</option>
+              <option value="Streichen Fixpunkte">Fixpunkte – Streichen</option>
+              <option value="Reinigen + Streichen Heftpoller">Heftpoller – Reinigen und Streichen</option>
+            </optgroup>
+            <optgroup label="Mulchen">
+              <option value="Ländenböschungen 3x jährlich mulchen">Ländenböschungen – Mulchen, 3× jährlich</option>
+              <option value="Dämme 2x jährlich mulchen VHP/via 50/50 (Melk)">Dämme – Mulchen, 2× jährlich · VHP/via 50/50 (Melk)</option>
+              <option value="Dämme 2x jährlich mulchen via">Dämme – Mulchen, 2× jährlich · via</option>
+              <option value="Dämme 2x jährlich mulchen via / VHP Oh, Abw, Wall">Dämme – Mulchen, 2× jährlich · via / VHP Oh, Abw, Wall</option>
+            </optgroup>
+            <optgroup label="Mähen">
+              <option value="Dämme 2x jährlich mähen VHP Melk / via 50/50">Dämme – Mähen, 2× jährlich · VHP Melk / via 50/50</option>
+              <option value="Dämme 2x jährlich mähen via">Dämme – Mähen, 2× jährlich · via</option>
+              <option value="Dämme 2x jährlich mähen via (VHP Wall)">Dämme – Mähen, 2× jährlich · via (VHP Wall)</option>
+              <option value="Ökologische Flächen 2x mähen">Ökologische Flächen – Mähen, 2× jährlich</option>
+              <option value="Bankettstreifen 1. Mahd">Bankettstreifen – 1. Mahd</option>
+              <option value="Bankettstreifen Zwischenmahd">Bankettstreifen – Zwischenmahd</option>
+              <option value="Bankettstreifen 2. Mahd">Bankettstreifen – 2. Mahd</option>
+            </optgroup>
+            <optgroup label="Mähgut entfernen / entsorgen">
+              <option value="Mähgut von Fläche entfernen VHP Melk / via 50/50">Mähgut – Von Fläche entfernen · VHP Melk / via 50/50</option>
+              <option value="Mähgut von Fläche entfernen via">Mähgut – Von Fläche entfernen · via</option>
+              <option value="Mähgut von Fläche entfernen via (VHP Wall)">Mähgut – Von Fläche entfernen · via (VHP Wall)</option>
+              <option value="Mähgut entsorgen VHP Melk / via 50/50">Mähgut – Entsorgen · VHP Melk / via 50/50 (Tonnen)</option>
+              <option value="Mähgut entsorgen via">Mähgut – Entsorgen · via (Tonnen)</option>
+              <option value="Mähgut entsorgen via (VHP Wall)">Mähgut – Entsorgen · via (VHP Wall) (Tonnen)</option>
+            </optgroup>
+            <optgroup label="Weitere Pflegearbeiten">
+              <option value="Herstellen Lichtraumprofil">Lichtraumprofil – Herstellen</option>
+            </optgroup>
           </select>
         </label>
         <label class="row-detail">Bereich / freie Ergänzung</label>
@@ -212,6 +228,6 @@
     </tr>
   </template>
 
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>
