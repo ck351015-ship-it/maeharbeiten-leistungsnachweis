@@ -192,7 +192,7 @@ window.addEventListener('beforeprint', preparePrintSignatures);
 form.addEventListener('submit', async event => {
   event.preventDefault();
   const contract = [form.elements.contract.value, form.elements.year.value].filter(Boolean).join('_');
-  document.title = `Leistungsbestaetigung_Maeharbeiten_${contract || 'Entwurf'}`.replace(/[^a-zA-Z0-9_-]+/g, '_');
+  document.title = `Leistungsbestaetigung_Streckenpflegearbeiten_${contract || 'Entwurf'}`.replace(/[^a-zA-Z0-9_-]+/g, '_');
   preparePrintSignatures();
   await Promise.allSettled(Array.from(document.querySelectorAll('.signature-print, .document-logos img'), image => image.decode()));
   window.print();
@@ -232,7 +232,7 @@ window.addEventListener('beforeunload', event => {
 });
 function collectDraft() {
   return {
-    format: 'viadonau-maeharbeiten', version: 3, id: draftId,
+    format: 'viadonau-maeharbeiten', version: 4, id: draftId,
     savedAt: new Date().toISOString(),
     fields: Object.fromEntries(masterNames.map(name => [name, form.elements[name].value])),
     sections: Array.from(rows.children, row => Object.fromEntries(sectionNames.map(name => [name, row.querySelector(`[name="${name}[]"]`).value]))),
@@ -240,8 +240,8 @@ function collectDraft() {
   };
 }
 function validateDraft(data) {
-  const fail = () => { throw new Error('Die Datei ist kein gültiger Lieferschein-Entwurf (Version 1 bis 3).'); };
-  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3].includes(data.version) ||
+  const fail = () => { throw new Error('Die Datei ist kein gültiger Lieferschein-Entwurf (Version 1 bis 4).'); };
+  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4].includes(data.version) ||
       typeof data.id !== 'string' || data.id.length > 100 || !data.fields || !data.signatures ||
       !Array.isArray(data.sections) || data.sections.length < 1 || data.sections.length > 200) fail();
   function fields(value, names) {
@@ -258,10 +258,10 @@ function validateDraft(data) {
     !['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland'].includes(data.fields.contractor) ||
     !['', '1. Leistungsabruf', '2. Leistungsabruf', '3. Leistungsabruf'].includes(data.fields.contract) ||
     !['', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033'].includes(data.fields.year))) fail();
-  if (!['', '1. Mähdurchgang', '2. Mähdurchgang', '3. Mähdurchgang', 'Sonderdurchgang'].includes(data.fields.cycle)) fail();
+  if (!(data.version < 4 ? ['', '1. Mähdurchgang', '2. Mähdurchgang', '3. Mähdurchgang', 'Sonderdurchgang'] : ["","Frühjahrsmahd","Herbstmahd","Zwischenmahd","Pflegearbeiten Allgemein (z.B. Holzen, Streichen)"]).includes(data.fields.cycle)) fail();
   for (const row of data.sections) {
     fields(row, data.version < 3 ? legacySectionNames : sectionNames);
-    if (data.version === 3) {
+    if (data.version >= 3) {
       if (row.service !== '' && !serviceOptions.includes(row.service)) fail();
       const unit = quantityUnit(row.service);
       if (!unit && row.quantity) fail();
@@ -321,6 +321,8 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
       ...data, version: 3,
       sections: data.sections.map(row => ({ ...row, service: '', quantity: '', interimArea: '' }))
     });
+    const legacyCycle = data.version < 4 && !!data.fields.cycle;
+    if (data.version < 4) data = upgradeWorkCategory(data);
     const images = await decodeSignatures(data);
     if (dirty && !window.confirm('Ungesicherte Eingaben durch den gespeicherten Entwurf ersetzen?')) return;
     masterNames.forEach(name => { form.elements[name].value = data.fields[name]; });
@@ -329,7 +331,9 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
     signatureIds.forEach((id, i) => signaturePads.get(id).restore(images[i]));
     draftId = data.id;
     dirty = false;
-    showStatus(migrated
+    showStatus(legacyCycle
+      ? 'Entwurf übernommen. Bitte die Art der Arbeiten neu auswählen und erneut unterschreiben. Der bisherige Mähdurchgang steht in den Anmerkungen.'
+      : migrated
       ? 'Älterer Entwurf übernommen. Bitte Standort, Leistungsabruf und Jahr prüfen und erneut unterschreiben. Frühere freie Auftragsangaben stehen in den Anmerkungen.'
       : 'Entwurf geöffnet – einschließlich gespeicherter Unterschriften. Nach der Bearbeitung erneut speichern und die neue Datei weitergeben.');
   } catch (error) {
@@ -353,5 +357,17 @@ function migrateLegacyDraft(data) {
     fields: { ...old, contractor, contract, year: /^(202[6-9]|203[0-3])$/.test(year) ? year : '', additionalNotes: notes.join('\n') },
     sections: data.sections.map(row => Object.fromEntries(legacySectionNames.map(name => [name, row[name]]))),
     signatures: { 'mr-signature': null, 'vd-signature': null }
+  });
+}
+
+function upgradeWorkCategory(data) {
+  const previous = data.fields.cycle;
+  return validateDraft({
+    ...data, version: 4,
+    fields: {
+      ...data.fields, cycle: '',
+      additionalNotes: [data.fields.additionalNotes, previous ? 'Bisheriger Mähdurchgang: ' + previous : ''].filter(Boolean).join('\n')
+    },
+    signatures: previous ? { 'mr-signature': null, 'vd-signature': null } : data.signatures
   });
 }

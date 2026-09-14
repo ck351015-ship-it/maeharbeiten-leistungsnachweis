@@ -227,3 +227,57 @@ td input, td select, td textarea { margin: 0; font-size: 12px; }
   th:nth-child(4) { width: 27%; }
   thead { display: table-header-group; }
 }
+
+/* Aligned two-row master data and consistent controls. */
+:root { --background: #f2f5f5; --line: #d8e1e3; }
+.app-header { padding-top: 22px; padding-bottom: 16px; }
+.app-header h1 { font-size: clamp(24px, 3vw, 32px); }
+.sheet { border: 1px solid var(--line); box-shadow: 0 8px 28px rgba(20,52,58,.06); }
+.document-head { padding-bottom: 20px; }
+.document-head h2 { font-size: clamp(21px, 2.8vw, 29px); line-height: 1.25; }
+.draft-tools { background: #eaf2f2; border-color: #d5e4e4; padding: 16px 20px; }
+.draft-tools > p:first-child { margin-bottom: 12px; }
+#draft-status { font-size: 12px; }
+.master-data { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px 16px; padding: 22px; background: #f7f9f9; border: 1px solid var(--line); border-radius: 12px; margin: 24px 0 30px; }
+.master-data > label { display: flex; flex-direction: column; min-width: 0; gap: 7px; line-height: 18px; }
+.master-data input, .master-data select { height: 44px; margin: 0; min-width: 0; padding: 9px 10px; }
+.field-contractor, .field-cycle { grid-column: span 6; }
+.field-contract { grid-column: span 4; }
+.field-year { grid-column: span 2; }
+.field-from, .field-to { grid-column: span 3; }
+td > label:first-child select { margin-top: 0; }
+td select, td input { min-height: 40px; }
+td { padding: 10px; }
+th:nth-child(1) { width: 44%; }
+th:nth-child(2) { width: 15%; }
+th:nth-child(3) { width: 14%; }
+th:nth-child(4) { width: 23%; }
+th:last-child { width: 4%; }
+tbody tr:nth-child(even) { background: #f8fafa; }
+.signature-card h3 { min-height: 2.5em; line-height: 1.25; }
+.signature-meta { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); align-items: end; }
+.signature-meta input { height: 42px; }
+.additional-notes { padding: 16px; background: #f7f9f9; border: 1px solid var(--line); border-radius: 10px; }
+@media screen and (max-width: 760px) {
+  .master-data { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 16px; gap: 16px 12px; }
+  .field-contractor, .field-cycle { grid-column: 1 / -1; }
+  .field-contract, .field-year, .field-from, .field-to { grid-column: span 1; }
+  .master-data select { font-size: 12px; }
+  .signature-card h3 { min-height: 0; }
+  td { padding: 0; min-width: 0; }
+  .draft-tools button { width: 100%; margin-right: 0; }
+}
+@media print {
+  .sheet { border: 0; box-shadow: none; }
+  .document-head h2 { font-size: 20px; }
+  .master-data { grid-template-columns: repeat(12, minmax(0, 1fr)); padding: 10px 12px; gap: 8px 14px; margin: 12px 0 16px; background: white; border-radius: 0; }
+  .master-data > label { font-size: 9px; gap: 2px; line-height: 12px; }
+  .master-data .print-value { margin: 0; padding: 2px 0; }
+  td { padding: 5px; }
+  th:nth-child(1) { width: 46%; }
+  th:nth-child(2) { width: 14%; }
+  th:nth-child(3) { width: 13%; }
+  th:nth-child(4) { width: 27%; }
+  .signature-card h3 { min-height: 0; }
+  .additional-notes { padding: 8px 10px; border-radius: 0; background: white; }
+}

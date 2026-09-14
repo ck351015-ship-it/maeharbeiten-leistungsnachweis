@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
-  <title>Leistungsbestätigung Mäharbeiten</title>
-  <link rel="stylesheet" href="styles.css?v=7">
+  <title>Leistungsbestätigung Streckenpflegearbeiten</title>
+  <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
   <header class="app-header no-print">
     <div>
       <p class="eyebrow">Digitale Leistungsdokumentation</p>
-      <h1>Mäharbeiten</h1>
+      <h1>Streckenpflegearbeiten</h1>
     </div>
   </header>
 
@@ -32,33 +32,25 @@
         <div class="document-head">
           <div>
             <p class="eyebrow">Lieferschein</p>
-            <h2>Leistungsbestätigung – Mäharbeiten</h2>
+            <h2>Leistungsbestätigung Streckenpflegearbeiten</h2>
           </div>
         </div>
 
         <div class="form-grid master-data">
-          <label>
-            Auftragnehmer
-            <select name="contractor" required>
+          <label class="field-contractor">Auftragnehmer<select name="contractor" required>
               <option value="">Bitte auswählen</option>
               <option>Maschinenring Donauland</option>
               <option>Maschinenring OÖ Zentralraum</option>
               <option>Maschinenring Ried</option>
               <option>Maschinenring Granitland</option>
-            </select>
-          </label>
-          <fieldset class="call-off">
-            <legend>Auftrag</legend>
-            <label>Leistungsabruf
-              <select name="contract" required>
+            </select></label>
+          <label class="field-contract">Leistungsabruf<select name="contract" required>
                 <option value="">Bitte auswählen</option>
                 <option>1. Leistungsabruf</option>
                 <option>2. Leistungsabruf</option>
                 <option>3. Leistungsabruf</option>
-              </select>
-            </label>
-            <label>Jahr
-              <select name="year" required>
+              </select></label>
+          <label class="field-year">Jahr<select name="year" required>
                 <option value="">Bitte auswählen</option>
                 <option>2026</option>
                 <option>2027</option>
@@ -68,24 +60,18 @@
                 <option>2031</option>
                 <option>2032</option>
                 <option>2033</option>
-              </select>
-            </label>
-          </fieldset>
-          <label>
-            Mähdurchgang
+              </select></label>
+          <label class="field-cycle">Art der Arbeiten
             <select name="cycle" required>
               <option value="">Bitte auswählen</option>
-              <option>1. Mähdurchgang</option>
-              <option>2. Mähdurchgang</option>
-              <option>3. Mähdurchgang</option>
-              <option>Sonderdurchgang</option>
+              <option>Frühjahrsmahd</option>
+              <option>Herbstmahd</option>
+              <option>Zwischenmahd</option>
+              <option>Pflegearbeiten Allgemein (z.B. Holzen, Streichen)</option>
             </select>
           </label>
-          <fieldset class="date-range">
-            <legend>Ausführungszeitraum</legend>
-            <label>von <input type="date" name="periodFrom" required></label>
-            <label>bis <input type="date" name="periodTo" required></label>
-          </fieldset>
+          <label class="field-from">Ausführung von<input type="date" name="periodFrom" required></label>
+          <label class="field-to">Ausführung bis<input type="date" name="periodTo" required></label>
         </div>
 
         <div class="section-title">
@@ -166,8 +152,8 @@
   <template id="section-row-template">
     <tr>
       <td data-label="Durchgeführte Leistung / Bereich">
-        <label>Leistung
-          <select name="service[]"><option value="">Bitte auswählen / freie Eingabe</option>
+        <label><span class="sr-only">Leistung</span>
+          <select name="service[]" aria-label="Leistung"><option value="">Bitte auswählen / freie Eingabe</option>
             <option>Kilometerzeichen Sichtfenster</option>
             <option>Hektometerzeichen Sichtfenster</option>
             <option>Schifffahrtszeichen Sichtfenster</option>
@@ -232,6 +218,6 @@
     </tr>
   </template>
 
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
