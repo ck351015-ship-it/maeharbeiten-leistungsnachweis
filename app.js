@@ -12,7 +12,7 @@ const template = document.querySelector('#section-row-template');
 
 function addRow(values = {}) {
   if (rows.children.length >= 200) {
-    showStatus('Maximal 200 Leistungen pro Lieferschein. Bitte einen weiteren Lieferschein anlegen.');
+    showStatus('Maximal 200 Leistungen pro Abnahmedokumentation. Bitte eine weitere Abnahmedokumentation anlegen.');
     return;
   }
   const fragment = template.content.cloneNode(true);
@@ -153,7 +153,7 @@ document.querySelector('#reset-form').addEventListener('click', () => {
   setDefaultDates();
   draftId = crypto.randomUUID();
   dirty = false;
-  showStatus('Neuer Lieferschein angelegt.');
+  showStatus('Neue Abnahmedokumentation angelegt.');
 });
 
 function setDefaultDates() {
@@ -240,7 +240,7 @@ function collectDraft() {
   };
 }
 function validateDraft(data) {
-  const fail = () => { throw new Error('Die Datei ist kein gültiger Lieferschein-Entwurf (Version 1 bis 5).'); };
+  const fail = () => { throw new Error('Die Datei ist kein gültiger Abnahmedokumentation-Entwurf (Version 1 bis 5).'); };
   if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4, 5].includes(data.version) ||
       typeof data.id !== 'string' || data.id.length > 100 || !data.fields || !data.signatures ||
       !Array.isArray(data.sections) || data.sections.length < 1 || data.sections.length > 200) fail();
@@ -294,18 +294,18 @@ function saveDraft() {
     return;
   }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  if (blob.size > 6000000) { showStatus('Entwurf zu groß. Bitte auf mehrere Lieferscheine aufteilen.'); return; }
+  if (blob.size > 6000000) { showStatus('Entwurf zu groß. Bitte auf mehrere Abnahmedokumentationen aufteilen.'); return; }
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   const name = ([data.fields.contract || 'Entwurf', data.fields.year].filter(Boolean).join('_')).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60);
   link.href = url;
-  link.download = `Lieferschein_${name}_${data.savedAt.slice(0, 19).replace(/:/g, '-')}.json`;
+  link.download = `Abnahmedokumentation_${name}_${data.savedAt.slice(0, 19).replace(/:/g, '-')}.json`;
   document.body.append(link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
   dirty = false;
-  showStatus('Download gestartet. Die gespeicherte Lieferschein-Datei per E-Mail oder Teams weitergeben. Der Empfänger öffnet sie hier über „Entwurf öffnen“.');
+  showStatus('Download gestartet. Die gespeicherte Abnahmedokumentation-Datei per E-Mail oder Teams weitergeben. Der Empfänger öffnet sie hier über „Entwurf öffnen“.');
 }
 document.querySelector('#save-draft').addEventListener('click', saveDraft);
 document.querySelector('#open-draft').addEventListener('click', () => document.querySelector('#draft-file').click());
