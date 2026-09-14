@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Leistungsbestätigung Streckenpflegearbeiten</title>
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
   <header class="app-header no-print">
@@ -88,8 +88,6 @@
               <tr>
                 <th>Durchgeführte Leistung / Bereich</th>
                 <th>Abgeschlossen</th>
-                <th>Kontrollstatus</th>
-                <th>Anmerkung / Nacharbeit bis</th>
                 <th class="no-print"><span class="sr-only">Aktion</span></th>
               </tr>
             </thead>
@@ -101,6 +99,13 @@
           <label for="additional-notes">Regieleistungen und sonstige Anmerkungen</label>
           <textarea id="additional-notes" name="additionalNotes" rows="4" maxlength="10000" placeholder="z. B. zusätzliche Arbeiten, besondere Vorkommnisse oder Hinweise zur Ausführung"></textarea>
           <div id="additional-notes-print" class="notes-print"></div>
+        </section>
+
+        <section class="additional-notes viadonau-comment">
+          <label for="vd-comment">Kommentar viadonau – Kontrolle und Nacharbeiten</label>
+          <p class="field-hint no-print">Feststellungen des Gewässermeisters, offene Punkte und erforderliche Nacharbeiten – bei Bedarf mit Bezug zur Leistung und Erledigungsfrist.</p>
+          <textarea id="vd-comment" name="vdComment" rows="4" maxlength="10000" placeholder="z. B. Sichtfenster bei Strom-km … nacharbeiten; Erledigung bis …"></textarea>
+          <div id="vd-comment-print" class="notes-print"></div>
         </section>
 
         <p class="legal-note">
@@ -203,21 +208,10 @@
       <td data-label="Abgeschlossen">
         <input type="date" name="completed[]" required>
       </td>
-      <td data-label="Kontrollstatus">
-        <select name="status[]" required>
-          <option value="">Bitte wählen</option>
-          <option>i. O.</option>
-          <option>Nacharbeit</option>
-        </select>
-      </td>
-      <td data-label="Anmerkung / Nacharbeit bis">
-        <textarea name="note[]" rows="2" placeholder="optional"></textarea>
-        <input class="follow-up-date" type="date" name="followUp[]" aria-label="Nacharbeit bis">
-      </td>
       <td class="row-actions no-print"><button type="button" class="delete-row" aria-label="Leistung entfernen">×</button></td>
     </tr>
   </template>
 
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>

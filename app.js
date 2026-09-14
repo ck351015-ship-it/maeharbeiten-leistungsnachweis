@@ -26,22 +26,10 @@ function addRow(values = {}) {
     if (rows.children.length === 1) {
       row.querySelectorAll('input, textarea, select').forEach(field => field.value = '');
       row.querySelector('[name="service[]"]').dispatchEvent(new Event('change', { bubbles: true }));
-      row.querySelector('[name="status[]"]').dispatchEvent(new Event('change', { bubbles: true }));
       return;
     }
     row.remove();
   });
-
-  const status = row.querySelector('[name="status[]"]');
-  const followUp = row.querySelector('[name="followUp[]"]');
-  const updateFollowUp = () => {
-    const needsWork = status.value === 'Nacharbeit';
-    followUp.hidden = !needsWork;
-    followUp.required = needsWork;
-    if (!needsWork) followUp.value = '';
-  };
-  status.addEventListener('change', updateFollowUp);
-  updateFollowUp();
 
   const service = row.querySelector('[name="service[]"]');
   const quantity = row.querySelector('[name="quantity[]"]');
@@ -171,7 +159,7 @@ function setDefaultDates() {
 function preparePrintSignatures() {
   document.querySelectorAll('.print-value').forEach(node => node.remove());
   document.querySelectorAll('.sheet input, .sheet select, .sheet textarea').forEach(field => {
-    if (field.name === 'additionalNotes' || field.hidden || field.closest('[hidden]')) return;
+    if (['additionalNotes', 'vdComment'].includes(field.name) || field.hidden || field.closest('[hidden]')) return;
     const value = document.createElement('span');
     value.className = 'print-value';
     let text = field.value;
@@ -179,6 +167,7 @@ function preparePrintSignatures() {
     value.textContent = text || '________________';
     field.after(value);
   });
+  document.querySelector('#vd-comment-print').textContent = form.elements.vdComment.value || '–';
   document.querySelector('#additional-notes-print').textContent = form.elements.additionalNotes.value || '–';
   document.querySelectorAll('.signature-pad').forEach(pad => {
     const canvas = pad.querySelector('canvas');
@@ -204,9 +193,10 @@ setDefaultDates();
 // Draft files are local handoffs, not a shared database or verified signatures.
 let draftId = crypto.randomUUID();
 let dirty = false;
-const masterNames = ['contractor', 'contract', 'year', 'additionalNotes', 'cycle', 'periodFrom', 'periodTo', 'mrName', 'mrDate', 'vdName', 'vdDate'];
+const masterNames = ['contractor', 'contract', 'year', 'additionalNotes', 'vdComment', 'cycle', 'periodFrom', 'periodTo', 'mrName', 'mrDate', 'vdName', 'vdDate'];
 const legacySectionNames = ['area', 'completed', 'status', 'note', 'followUp'];
-const sectionNames = [...legacySectionNames, 'service', 'quantity', 'interimArea'];
+const versionThreeSectionNames = [...legacySectionNames, 'service', 'quantity', 'interimArea'];
+const sectionNames = ['area', 'completed', 'service', 'quantity', 'interimArea'];
 const signatureIds = ['mr-signature', 'vd-signature'];
 function showStatus(message) { document.querySelector('#draft-status').textContent = message; }
 function invalidateSignatures(who) {
@@ -222,7 +212,7 @@ function invalidateSignatures(who) {
 function fieldChanged(event) {
   const name = event.target.name;
   if (!name) return;
-  const controls = ['status[]', 'note[]', 'followUp[]', 'vdName', 'vdDate'];
+  const controls = ['vdComment', 'vdName', 'vdDate'];
   invalidateSignatures(controls.includes(name) ? 'vd' : 'both');
 }
 form.addEventListener('input', fieldChanged);
@@ -232,7 +222,7 @@ window.addEventListener('beforeunload', event => {
 });
 function collectDraft() {
   return {
-    format: 'viadonau-maeharbeiten', version: 4, id: draftId,
+    format: 'viadonau-maeharbeiten', version: 5, id: draftId,
     savedAt: new Date().toISOString(),
     fields: Object.fromEntries(masterNames.map(name => [name, form.elements[name].value])),
     sections: Array.from(rows.children, row => Object.fromEntries(sectionNames.map(name => [name, row.querySelector(`[name="${name}[]"]`).value]))),
@@ -240,8 +230,8 @@ function collectDraft() {
   };
 }
 function validateDraft(data) {
-  const fail = () => { throw new Error('Die Datei ist kein gültiger Lieferschein-Entwurf (Version 1 bis 4).'); };
-  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4].includes(data.version) ||
+  const fail = () => { throw new Error('Die Datei ist kein gültiger Lieferschein-Entwurf (Version 1 bis 5).'); };
+  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4, 5].includes(data.version) ||
       typeof data.id !== 'string' || data.id.length > 100 || !data.fields || !data.signatures ||
       !Array.isArray(data.sections) || data.sections.length < 1 || data.sections.length > 200) fail();
   function fields(value, names) {
@@ -253,14 +243,14 @@ function validateDraft(data) {
           !Number.isFinite(Date.parse(value[name])) || new Date(value[name]).toISOString().slice(0, 10) !== value[name])) fail();
     }
   }
-  fields(data.fields, data.version === 1 ? masterNames.filter(name => !['year', 'additionalNotes'].includes(name)) : masterNames);
+  fields(data.fields, masterNames.filter(name => !(data.version < 5 && name === 'vdComment') && !(data.version === 1 && ['year', 'additionalNotes'].includes(name))));
   if (data.version >= 2 && (
     !['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland'].includes(data.fields.contractor) ||
     !['', '1. Leistungsabruf', '2. Leistungsabruf', '3. Leistungsabruf'].includes(data.fields.contract) ||
     !['', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033'].includes(data.fields.year))) fail();
   if (!(data.version < 4 ? ['', '1. Mähdurchgang', '2. Mähdurchgang', '3. Mähdurchgang', 'Sonderdurchgang'] : ["","Frühjahrsmahd","Herbstmahd","Zwischenmahd","Pflegearbeiten Allgemein (z.B. Holzen, Streichen)"]).includes(data.fields.cycle)) fail();
   for (const row of data.sections) {
-    fields(row, data.version < 3 ? legacySectionNames : sectionNames);
+    fields(row, data.version < 3 ? legacySectionNames : data.version < 5 ? versionThreeSectionNames : sectionNames);
     if (data.version >= 3) {
       if (row.service !== '' && !serviceOptions.includes(row.service)) fail();
       const unit = quantityUnit(row.service);
@@ -268,8 +258,8 @@ function validateDraft(data) {
       if (row.quantity && !(unit === 'Stück' ? /^\d+$/ : /^\d+(?:[.,]\d+)?$/).test(row.quantity)) fail();
       if (row.service !== 'Bankettstreifen Zwischenmahd' && row.interimArea) fail();
     }
-    if (!['', 'i. O.', 'Nacharbeit'].includes(row.status) ||
-        (row.status !== 'Nacharbeit' && row.followUp)) fail();
+    if (data.version < 5 && (!['', 'i. O.', 'Nacharbeit'].includes(row.status) ||
+        (row.status !== 'Nacharbeit' && row.followUp))) fail();
   }
   for (const id of signatureIds) {
     const image = data.signatures[id];
@@ -323,6 +313,7 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
     });
     const legacyCycle = data.version < 4 && !!data.fields.cycle;
     if (data.version < 4) data = upgradeWorkCategory(data);
+    if (data.version < 5) data = upgradeComments(data);
     const images = await decodeSignatures(data);
     if (dirty && !window.confirm('Ungesicherte Eingaben durch den gespeicherten Entwurf ersetzen?')) return;
     masterNames.forEach(name => { form.elements[name].value = data.fields[name]; });
@@ -369,5 +360,23 @@ function upgradeWorkCategory(data) {
       additionalNotes: [data.fields.additionalNotes, previous ? 'Bisheriger Mähdurchgang: ' + previous : ''].filter(Boolean).join('\n')
     },
     signatures: previous ? { 'mr-signature': null, 'vd-signature': null } : data.signatures
+  });
+}
+
+function upgradeComments(data) {
+  const comments = data.sections.map((row, index) => {
+    const details = [
+      row.status ? 'Kontrollstatus: ' + row.status : '',
+      row.note || '',
+      row.followUp ? 'Nacharbeit bis: ' + row.followUp.split('-').reverse().join('.') : ''
+    ].filter(Boolean);
+    if (!details.length) return '';
+    const reference = [row.service, row.area].filter(Boolean).join(' – ');
+    return 'Leistung ' + (index + 1) + (reference ? ' (' + reference + ')' : '') + ':\n' + details.join('\n');
+  }).filter(Boolean).join('\n\n');
+  return validateDraft({
+    ...data, version: 5,
+    fields: { ...data.fields, vdComment: comments },
+    sections: data.sections.map(row => Object.fromEntries(sectionNames.map(name => [name, row[name]])))
   });
 }
