@@ -1,4 +1,6 @@
-const serviceOptions = ["Kilometerzeichen Sichtfenster","Hektometerzeichen Sichtfenster","Schifffahrtszeichen Sichtfenster","Fixpunkte Sichtfenster","Reinigen Hektometer","Reinigen Kilometerzeichen","Reinigen Fixpunkte","Reinigen Schifffahrtszeichen","Streichen HM-Zeichen","Streichen Fixpunkte","Streichen Kilometerzeichen","Streichen Schifffahrtszeichen SÄULE","Reinigen + Streichen Heftpoller","Sichtfenster Hektometer","Sichtfenster Kilometerzeichen","Sichtfenster Schifffahrtszeichen","Sichtfenster Fixpunkte","Ländenböschungen 3x jährlich mulchen","Dämme 2x jährlich mulchen VHP/via 50/50 (Melk)","Dämme 2x jährlich mulchen via","Dämme 2x jährlich mulchen via / VHP Oh, Abw, Wall","Dämme 2x jährlich mähen VHP Melk / via 50/50","Dämme 2x jährlich mähen via","Dämme 2x jährlich mähen via (VHP Wall)","Ökologische Flächen 2x mähen","Mähgut von Fläche entfernen VHP Melk / via 50/50","Mähgut von Fläche entfernen via","Mähgut von Fläche entfernen via (VHP Wall)","Mähgut entsorgen VHP Melk / via 50/50","Mähgut entsorgen via","Mähgut entsorgen via (VHP Wall)","Bankettstreifen 1. Mahd","Bankettstreifen Zwischenmahd","Bankettstreifen 2. Mahd","Herstellen Lichtraumprofil"];
+const serviceOptions = ["Kilometerzeichen Ausmähen","Hektometerzeichen Ausmähen","Schifffahrtszeichen Ausmähen","Fixpunkte Ausmähen","Reinigen Hektometer","Reinigen Kilometerzeichen","Reinigen Fixpunkte","Reinigen Schifffahrtszeichen","Streichen HM-Zeichen","Streichen Fixpunkte","Streichen Kilometerzeichen","Streichen Schifffahrtszeichen SÄULE","Reinigen + Streichen Heftpoller","Sichtfenster Hektometer","Sichtfenster Kilometerzeichen","Sichtfenster Schifffahrtszeichen","Sichtfenster Fixpunkte","Ländenböschungen 3x jährlich mulchen","Dämme 2x jährlich mulchen VHP/via 50/50 (Melk)","Dämme 2x jährlich mulchen via","Dämme 2x jährlich mulchen via / VHP Oh, Abw, Wall","Dämme 2x jährlich mähen VHP Melk / via 50/50","Dämme 2x jährlich mähen via","Dämme 2x jährlich mähen via (VHP Wall)","Ökologische Flächen 2x mähen","Mähgut von Fläche entfernen VHP Melk / via 50/50","Mähgut von Fläche entfernen via","Mähgut von Fläche entfernen via (VHP Wall)","Mähgut entsorgen VHP Melk / via 50/50","Mähgut entsorgen via","Mähgut entsorgen via (VHP Wall)","Bankettstreifen 1. Mahd","Bankettstreifen Zwischenmahd","Bankettstreifen 2. Mahd","Herstellen Lichtraumprofil"];
+// Retain historical wording when reopening signed drafts.
+const legacyServiceOptions = ["Kilometerzeichen Sichtfenster","Hektometerzeichen Sichtfenster","Schifffahrtszeichen Sichtfenster","Fixpunkte Sichtfenster"];
 function quantityUnit(service) {
   if (service === 'Streichen Schifffahrtszeichen SÄULE') return 'Stück';
   if (service.startsWith('Mähgut entsorgen ')) return 'Tonnen';
@@ -16,6 +18,12 @@ function addRow(values = {}) {
   const fragment = template.content.cloneNode(true);
   const row = fragment.querySelector('tr');
 
+  if (legacyServiceOptions.includes(values.service)) {
+    const option = document.createElement('option');
+    option.value = values.service;
+    option.textContent = values.service;
+    row.querySelector('[name="service[]"]').append(option);
+  }
   Object.entries(values).forEach(([name, value]) => {
     const field = row.querySelector(`[name="${name}[]"]`);
     if (field) field.value = value;
@@ -252,7 +260,7 @@ function validateDraft(data) {
   for (const row of data.sections) {
     fields(row, data.version < 3 ? legacySectionNames : data.version < 5 ? versionThreeSectionNames : sectionNames);
     if (data.version >= 3) {
-      if (row.service !== '' && !serviceOptions.includes(row.service)) fail();
+      if (row.service !== '' && !serviceOptions.includes(row.service) && !legacyServiceOptions.includes(row.service)) fail();
       const unit = quantityUnit(row.service);
       if (!unit && row.quantity) fail();
       if (row.quantity && !(unit === 'Stück' ? /^\d+$/ : /^\d+(?:[.,]\d+)?$/).test(row.quantity)) fail();
