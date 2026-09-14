@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Leistungsbestätigung Mäharbeiten</title>
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
   <header class="app-header no-print">
@@ -16,13 +16,13 @@
   </header>
 
   <main>
-    <form id="delivery-form">
+    <form id="delivery-form" novalidate>
       <div class="draft-tools no-print">
         <p><strong>Gemeinsam arbeiten – ohne Anmeldung</strong><br>Entwurf speichern, Datei weitergeben und am anderen Gerät hier öffnen. Eingaben und Unterschriften sind in der Datei enthalten.</p>
         <button type="button" class="button button-secondary" id="open-draft">Entwurf öffnen</button>
         <button type="button" class="button button-secondary" id="save-draft">Entwurf speichern / weitergeben</button>
         <input type="file" id="draft-file" accept=".json,application/json" hidden>
-        <p id="draft-status" role="status" aria-live="polite">Unvollständige Entwürfe können jederzeit gespeichert werden. PDF erst nach vollständiger Bestätigung.</p>
+        <p id="draft-status" role="status" aria-live="polite">Entwürfe und PDFs können jederzeit gespeichert werden – auch ohne digitale Unterschrift zum Unterschreiben auf Papier.</p>
       </div>
       <section class="sheet">
         <div class="document-logos" aria-label="Auftraggeber und Auftragnehmer">
@@ -90,19 +90,19 @@
 
         <div class="section-title">
           <div>
-            <h3>Streckenabschnitte</h3>
-            <p>Jeden Bereich einzeln erfassen und den Leistungsstand dokumentieren.</p>
+            <h3>Durchgeführte Leistungen</h3>
+            <p>Leistung auswählen und Bereich oder ergänzende Angaben eintragen.</p>
           </div>
-          <button class="button button-secondary no-print" type="button" id="add-row">+ Bereich hinzufügen</button>
+          <button class="button button-secondary no-print" type="button" id="add-row">+ Leistung hinzufügen</button>
         </div>
 
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Bereich / Streckenabschnitt</th>
+                <th>Durchgeführte Leistung / Bereich</th>
                 <th>Abgeschlossen</th>
-                <th>Leistung</th>
+                <th>Kontrollstatus</th>
                 <th>Anmerkung / Nacharbeit bis</th>
                 <th class="no-print"><span class="sr-only">Aktion</span></th>
               </tr>
@@ -118,7 +118,7 @@
         </section>
 
         <p class="legal-note">
-          Der Maschinenring bestätigt die angeführte Ausführung. viadonau bestätigt das dokumentierte Ergebnis der Sichtkontrolle; vermerkte Nacharbeiten bleiben offen. Dieser Lieferschein dient der Leistungsdokumentation; er beinhaltet keine Mengenfeststellung und keine rechnerische Rechnungsfreigabe. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.
+          Der Maschinenring bestätigt die angeführte Ausführung. viadonau bestätigt das dokumentierte Ergebnis der Sichtkontrolle; vermerkte Nacharbeiten bleiben offen. Dieser Lieferschein dient der Leistungsdokumentation; Mengen werden ausschließlich bei den gekennzeichneten Aufmaßpositionen erfasst. Eine rechnerische Rechnungsfreigabe ist damit nicht verbunden. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.
         </p>
 
         <div class="signatures">
@@ -165,13 +165,59 @@
 
   <template id="section-row-template">
     <tr>
-      <td data-label="Bereich / Streckenabschnitt">
-        <textarea name="area[]" rows="2" placeholder="z. B. Treppelweg Strom-km 2160,0–2162,5" required></textarea>
+      <td data-label="Durchgeführte Leistung / Bereich">
+        <label>Leistung
+          <select name="service[]"><option value="">Bitte auswählen / freie Eingabe</option>
+            <option>Kilometerzeichen Sichtfenster</option>
+            <option>Hektometerzeichen Sichtfenster</option>
+            <option>Schifffahrtszeichen Sichtfenster</option>
+            <option>Fixpunkte Sichtfenster</option>
+            <option>Reinigen Hektometer</option>
+            <option>Reinigen Kilometerzeichen</option>
+            <option>Reinigen Fixpunkte</option>
+            <option>Reinigen Schifffahrtszeichen</option>
+            <option>Streichen HM-Zeichen</option>
+            <option>Streichen Fixpunkte</option>
+            <option>Streichen Kilometerzeichen</option>
+            <option>Streichen Schifffahrtszeichen SÄULE</option>
+            <option>Reinigen + Streichen Heftpoller</option>
+            <option>Sichtfenster Hektometer</option>
+            <option>Sichtfenster Kilometerzeichen</option>
+            <option>Sichtfenster Schifffahrtszeichen</option>
+            <option>Sichtfenster Fixpunkte</option>
+            <option>Ländenböschungen 3x jährlich mulchen</option>
+            <option>Dämme 2x jährlich mulchen VHP/via 50/50 (Melk)</option>
+            <option>Dämme 2x jährlich mulchen via</option>
+            <option>Dämme 2x jährlich mulchen via / VHP Oh, Abw, Wall</option>
+            <option>Dämme 2x jährlich mähen VHP Melk / via 50/50</option>
+            <option>Dämme 2x jährlich mähen via</option>
+            <option>Dämme 2x jährlich mähen via (VHP Wall)</option>
+            <option>Ökologische Flächen 2x mähen</option>
+            <option>Mähgut von Fläche entfernen VHP Melk / via 50/50</option>
+            <option>Mähgut von Fläche entfernen via</option>
+            <option>Mähgut von Fläche entfernen via (VHP Wall)</option>
+            <option>Mähgut entsorgen VHP Melk / via 50/50</option>
+            <option>Mähgut entsorgen via</option>
+            <option>Mähgut entsorgen via (VHP Wall)</option>
+            <option>Bankettstreifen 1. Mahd</option>
+            <option>Bankettstreifen Zwischenmahd</option>
+            <option>Bankettstreifen 2. Mahd</option>
+            <option>Herstellen Lichtraumprofil</option>
+          </select>
+        </label>
+        <label class="row-detail">Bereich / freie Ergänzung</label>
+        <textarea name="area[]" rows="2" aria-label="Bereich / freie Ergänzung" placeholder="Bereich, Wegabschnitt oder ergänzende Beschreibung"></textarea>
+        <label class="quantity-field row-detail" hidden><span class="quantity-label">Menge</span>
+          <input name="quantity[]" inputmode="decimal" placeholder="Menge">
+        </label>
+        <label class="interim-field row-detail" hidden>Zwischenmahd: Wegabschnitt / Bereich oder m²
+          <textarea name="interimArea[]" rows="2" placeholder="z. B. Strom-km … bis …, Uferseite, bearbeitete m²"></textarea>
+        </label>
       </td>
       <td data-label="Abgeschlossen">
         <input type="date" name="completed[]" required>
       </td>
-      <td data-label="Leistung">
+      <td data-label="Kontrollstatus">
         <select name="status[]" required>
           <option value="">Bitte wählen</option>
           <option>i. O.</option>
@@ -182,10 +228,10 @@
         <textarea name="note[]" rows="2" placeholder="optional"></textarea>
         <input class="follow-up-date" type="date" name="followUp[]" aria-label="Nacharbeit bis">
       </td>
-      <td class="row-actions no-print"><button type="button" class="delete-row" aria-label="Bereich entfernen">×</button></td>
+      <td class="row-actions no-print"><button type="button" class="delete-row" aria-label="Leistung entfernen">×</button></td>
     </tr>
   </template>
 
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

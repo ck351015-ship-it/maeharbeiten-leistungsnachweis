@@ -212,3 +212,18 @@ td input, td select, td textarea { margin: 0; font-size: 12px; }
   .additional-notes textarea { display: none; }
   .notes-print { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 9px; line-height: 1.45; margin-top: 4px; }
 }
+
+.row-detail { display: block; margin-top: 9px; }
+[hidden] { display: none !important; }
+.print-value { display: none; }
+@media print {
+  .sheet input, .sheet select, .sheet textarea { display: none !important; }
+  .print-value { display: block; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 14px; border-bottom: 1px solid #b9c5c8; padding: 3px 1px; font-size: 9px; font-weight: normal; color: var(--ink); }
+  .signature-placeholder { display: none; }
+  .row-detail { margin-top: 5px; }
+  th:nth-child(1) { width: 46%; }
+  th:nth-child(2) { width: 14%; }
+  th:nth-child(3) { width: 13%; }
+  th:nth-child(4) { width: 27%; }
+  thead { display: table-header-group; }
+}
