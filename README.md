@@ -6,12 +6,11 @@ Statische, datensparsame Webanwendung zur gemeinsamen Dokumentation und Sichtabn
 
 - ohne Anmeldung nutzbar
 - bis zu 200 Streckenabschnitte pro Lieferschein
-- abschnittsweise Kennzeichnung „i. O.“ oder „Nacharbeit“
-- Kürzel beider Kontrollierenden je Abschnitt
+- gemeinsamer viadonau-Kommentar für Kontrolle und Nacharbeiten
 - Unterschriften mit Maus, Stift oder Touchscreen
 - druckoptimierte A4-Querformat-Ausgabe über „PDF erstellen / drucken“
 - Entwurf als JSON-Datei speichern und an einem anderen Gerät wieder öffnen
-- Eingaben und Unterschriften vollständig in der Entwurfsdatei
+- Eingaben, Unterschriften und Fotos vollständig in der Entwurfsdatei
 - erneute Unterschrift nach Änderungen an bestätigten Angaben
 - keine Übertragung von Formulardaten an einen Server
 
@@ -25,7 +24,7 @@ Das enthaltene Workflow-File veröffentlicht den Inhalt automatisch über GitHub
 
 ## Datenschutz
 
-Alle Formulardaten bleiben im Browser, bis der Benutzer eine Entwurfsdatei oder ein PDF lokal speichert. Die Entwurfsdatei enthält Namen und Unterschriften. Sie wird bewusst per E-Mail oder Teams weitergegeben, nicht automatisch synchronisiert. Vor dem Schließen muss die aktuelle Fassung erneut gespeichert werden. Die gezeichneten Unterschriften sind keine Identitätsprüfung; JSON-Dateien sind nicht manipulationssicher.
+Alle Formulardaten bleiben im Browser, bis der Benutzer eine Entwurfsdatei oder ein PDF lokal speichert. Die Entwurfsdatei enthält Namen, Unterschriften und Fotos. Sie wird bewusst per E-Mail oder Teams weitergegeben, nicht automatisch synchronisiert. Vor dem Schließen muss die aktuelle Fassung erneut gespeichert werden. Die gezeichneten Unterschriften sind keine Identitätsprüfung; JSON-Dateien sind nicht manipulationssicher.
 
 ## Übergabe zwischen zwei Bearbeitern
 
@@ -35,6 +34,16 @@ Alle Formulardaten bleiben im Browser, bis der Benutzer eine Entwurfsdatei oder 
 4. Gewässermeister nutzt „Entwurf öffnen“, ergänzt Kontrollfelder und unterschreibt.
 5. Aktualisierten Entwurf speichern und PDF über den Browser drucken.
 
-Änderungen an gemeinsamen Leistungsangaben löschen beide Unterschriften. Änderungen an Kontrollfeldern löschen nur die viadonau-Unterschrift. Die Bestätigung ist anschließend zu erneuern. Das PDF erfordert vollständige Pflichtfelder und beide Unterschriften. Ein Vorgang mit Nacharbeiten bleibt im PDF entsprechend gekennzeichnet.
+Änderungen an gemeinsamen Leistungsangaben löschen beide Unterschriften. Änderungen an Kontrollfeldern löschen nur die viadonau-Unterschrift. Die Bestätigung ist anschließend zu erneuern. Entwürfe und PDFs können auch ohne digitale Unterschriften gespeichert werden. Vermerkte Nacharbeiten werden im Kommentar ausgegeben.
 
-Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt werden Formatversion 1, maximal 200 Bereiche und 6 MB je Datei. Daten werden ausschließlich als Feldwerte eingesetzt, nicht als HTML ausgeführt.
+Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt werden Formatversionen 1–6, maximal 200 Bereiche und 20 MB je Datei. Daten werden ausschließlich als Feldwerte eingesetzt, nicht als HTML ausgeführt.
+
+## Fotos zur Dokumentation
+
+- Vor den Unterschriften können bis zu 12 Fotos aufgenommen oder gemeinsam ausgewählt werden. Die Kameraauswahl hängt vom Gerät und Browser ab.
+- Bilder werden lokal auf maximal 1600 Pixel Kantenlänge verkleinert und als JPEG gespeichert (unter 1 MB Daten-URL pro Bild). Es werden keine Fotos hochgeladen. Nicht unterstützte Formate werden mit einem Hinweis abgewiesen.
+- Zu jedem Foto ist eine Beschreibung mit maximal 500 Zeichen möglich. Fotos lassen sich einzeln entfernen.
+- „Entwurf speichern / weitergeben“ enthält Fotos und Beschreibungen vollständig; ohne erneutes Speichern gehen Änderungen beim Schließen verloren.
+- Entwurfsformat 6 unterstützt Fotos; frühere Versionen 1–5 bleiben lesbar. Die Dateigrenze beträgt nun 20 MB.
+- Der optionale Fotoanhang wird nach dem Hauptformular als A4-Hochformat mit zwei Bildern je Seite gedruckt. Bildproportionen bleiben erhalten. Standort, Leistungsabruf, Jahr und Dokument-ID stellen die Zuordnung sicher.
+- Änderungen an Fotos, Bildbeschreibungen oder ihrer Aufnahme ins PDF löschen vorhandene Unterschriften wie andere Änderungen an gemeinsamen Angaben.

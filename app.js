@@ -145,8 +145,9 @@ document.querySelectorAll('[data-clear-signature]').forEach(button => {
 document.querySelector('#add-row').addEventListener('click', () => { invalidateSignatures('both'); addRow(); });
 
 document.querySelector('#reset-form').addEventListener('click', () => {
-  if (!window.confirm('Alle Eingaben und Unterschriften verwerfen?')) return;
+  if (!window.confirm('Alle Eingaben, Fotos und Unterschriften verwerfen?')) return;
   form.reset();
+  photoManager.restore({});
   rows.replaceChildren();
   signaturePads.forEach(pad => pad.clear());
   addRow();
@@ -165,9 +166,10 @@ function setDefaultDates() {
 }
 
 function preparePrintSignatures() {
+  photoManager.preparePrint(form.elements, draftId);
   document.querySelectorAll('.print-value').forEach(node => node.remove());
   document.querySelectorAll('.sheet input, .sheet select, .sheet textarea').forEach(field => {
-    if (['additionalNotes', 'vdComment'].includes(field.name) || field.hidden || field.closest('[hidden]')) return;
+    if (['additionalNotes', 'vdComment'].includes(field.name) || field.hidden || field.closest('[hidden], .no-print')) return;
     const value = document.createElement('span');
     value.className = 'print-value';
     let text = field.tagName === 'SELECT' && field.value
@@ -190,10 +192,11 @@ window.addEventListener('beforeprint', preparePrintSignatures);
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
+  if (photoManager.isBusy()) { showStatus('Bitte warten, bis die Fotos verarbeitet sind.'); return; }
   const contract = [form.elements.contract.value, form.elements.year.value].filter(Boolean).join('_');
   document.title = `Leistungsbestaetigung_Streckenpflegearbeiten_${contract || 'Entwurf'}`.replace(/[^a-zA-Z0-9_-]+/g, '_');
   preparePrintSignatures();
-  await Promise.allSettled(Array.from(document.querySelectorAll('.signature-print, .document-logos img'), image => image.decode()));
+  await Promise.allSettled(Array.from(document.querySelectorAll('.signature-print, .document-logos img, #photo-appendix img'), image => image.decode()));
   window.print();
 });
 
@@ -232,7 +235,8 @@ window.addEventListener('beforeunload', event => {
 });
 function collectDraft() {
   return {
-    format: 'viadonau-maeharbeiten', version: 5, id: draftId,
+    format: 'viadonau-maeharbeiten', version: 6, id: draftId,
+    ...photoManager.export(),
     savedAt: new Date().toISOString(),
     fields: Object.fromEntries(masterNames.map(name => [name, form.elements[name].value])),
     sections: Array.from(rows.children, row => Object.fromEntries(sectionNames.map(name => [name, row.querySelector(`[name="${name}[]"]`).value]))),
@@ -240,8 +244,8 @@ function collectDraft() {
   };
 }
 function validateDraft(data) {
-  const fail = () => { throw new Error('Die Datei ist kein gültiger Abnahmedokumentation-Entwurf (Version 1 bis 5).'); };
-  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4, 5].includes(data.version) ||
+  const fail = () => { throw new Error('Die Datei ist kein gültiger Abnahmedokumentation-Entwurf (Version 1 bis 6).'); };
+  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4, 5, 6].includes(data.version) ||
       typeof data.id !== 'string' || data.id.length > 100 || !data.fields || !data.signatures ||
       !Array.isArray(data.sections) || data.sections.length < 1 || data.sections.length > 200) fail();
   function fields(value, names) {
@@ -275,6 +279,7 @@ function validateDraft(data) {
     const image = data.signatures[id];
     if (image !== null && (typeof image !== 'string' || image.length > 2000000 || !/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(image))) fail();
   }
+  photoManager.validate(data);
   return data;
 }
 async function decodeSignatures(data) {
@@ -288,13 +293,14 @@ async function decodeSignatures(data) {
   }));
 }
 function saveDraft() {
+  if (photoManager.isBusy()) { showStatus('Bitte warten, bis die Fotos verarbeitet sind.'); return; }
   let data;
   try { data = validateDraft(collectDraft()); } catch {
     showStatus('Entwurf konnte nicht gespeichert werden. Bitte Datum und Mengen prüfen (Stück: ganze Zahl; Tonnen: Zahl mit Komma oder Punkt). Texte dürfen höchstens 10.000 Zeichen pro Feld enthalten.');
     return;
   }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  if (blob.size > 6000000) { showStatus('Entwurf zu groß. Bitte auf mehrere Abnahmedokumentationen aufteilen.'); return; }
+  if (blob.size > 20000000) { showStatus('Entwurf zu groß. Bitte auf mehrere Abnahmedokumentationen aufteilen.'); return; }
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   const name = ([data.fields.contract || 'Entwurf', data.fields.year].filter(Boolean).join('_')).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60);
@@ -313,7 +319,7 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
   const file = event.target.files[0];
   if (!file) return;
   try {
-    if (file.size > 6000000) throw new Error('Die Datei ist zu groß (maximal 6 MB).');
+    if (file.size > 20000000) throw new Error('Die Datei ist zu groß (maximal 20 MB).');
     let data = validateDraft(JSON.parse(await file.text()));
     const migrated = data.version === 1;
     if (migrated) data = migrateLegacyDraft(data);
@@ -324,19 +330,21 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
     const legacyCycle = data.version < 4 && !!data.fields.cycle;
     if (data.version < 4) data = upgradeWorkCategory(data);
     if (data.version < 5) data = upgradeComments(data);
+    await photoManager.decode(data);
     const images = await decodeSignatures(data);
     if (dirty && !window.confirm('Ungesicherte Eingaben durch den gespeicherten Entwurf ersetzen?')) return;
     masterNames.forEach(name => { form.elements[name].value = data.fields[name]; });
     rows.replaceChildren();
     data.sections.forEach(addRow);
     signatureIds.forEach((id, i) => signaturePads.get(id).restore(images[i]));
+    photoManager.restore(data);
     draftId = data.id;
     dirty = false;
     showStatus(legacyCycle
       ? 'Entwurf übernommen. Bitte die Art der Arbeiten neu auswählen und erneut unterschreiben. Der bisherige Mähdurchgang steht in den Anmerkungen.'
       : migrated
       ? 'Älterer Entwurf übernommen. Bitte Standort, Leistungsabruf und Jahr prüfen und erneut unterschreiben. Frühere freie Auftragsangaben stehen in den Anmerkungen.'
-      : 'Entwurf geöffnet – einschließlich gespeicherter Unterschriften. Nach der Bearbeitung erneut speichern und die neue Datei weitergeben.');
+      : 'Entwurf geöffnet – einschließlich gespeicherter Unterschriften und Fotos. Nach der Bearbeitung erneut speichern und die neue Datei weitergeben.');
   } catch (error) {
     showStatus('Entwurf konnte nicht geöffnet werden. ' + (error instanceof SyntaxError ? 'Die Datei enthält kein gültiges JSON.' : error.message) + ' Bestehende Eingaben bleiben erhalten.');
   } finally {
