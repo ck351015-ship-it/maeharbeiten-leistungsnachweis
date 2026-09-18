@@ -36,7 +36,7 @@ Alle Formulardaten bleiben im Browser, bis der Benutzer eine Entwurfsdatei oder 
 
 Änderungen an gemeinsamen Leistungsangaben löschen beide Unterschriften. Änderungen an Kontrollfeldern löschen nur die viadonau-Unterschrift. Die Bestätigung ist anschließend zu erneuern. Entwürfe und PDFs können auch ohne digitale Unterschriften gespeichert werden. Vermerkte Nacharbeiten werden im Kommentar ausgegeben.
 
-Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt werden Formatversionen 1–6, maximal 200 Bereiche und 20 MB je Datei. Daten werden ausschließlich als Feldwerte eingesetzt, nicht als HTML ausgeführt.
+Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt werden Formatversionen 1–7, maximal 200 Bereiche und 20 MB je Datei. Daten werden ausschließlich als Feldwerte eingesetzt, nicht als HTML ausgeführt.
 
 ## Fotos zur Dokumentation
 
@@ -47,3 +47,11 @@ Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt w
 - Entwurfsformat 6 unterstützt Fotos; frühere Versionen 1–5 bleiben lesbar. Die Dateigrenze beträgt nun 20 MB.
 - Der optionale Fotoanhang wird nach dem Hauptformular als A4-Hochformat mit zwei Bildern je Seite gedruckt. Bildproportionen bleiben erhalten. Standort, Leistungsabruf, Jahr und Dokument-ID stellen die Zuordnung sicher.
 - Änderungen an Fotos, Bildbeschreibungen oder ihrer Aufnahme ins PDF löschen vorhandene Unterschriften wie andere Änderungen an gemeinsamen Angaben.
+
+## Mehrfachauswahl und Bestätigungstext
+
+Über „Mehrere Leistungen auswählen“ können mehrere Arbeitsschritte per Checkbox gemeinsam hinzugefügt werden. Bereich und Abschlussdatum lassen sich gemeinsam vorgeben; jede Leistung bleibt eine eigene Zeile mit ihren Aufmaßfeldern.
+
+Entwurfsformat 7 verwendet den aktualisierten Bestätigungstext. Bei älteren Entwürfen werden Unterschriften entfernt und eine erneute Bestätigung verlangt; Angaben und Fotos bleiben erhalten. Frühere Maschinenring-Namen werden in importierten Entwürfen als historische Einträge angezeigt und nicht stillschweigend umbenannt.
+
+Vom Browser ergänzte Druckfußzeilen (URL, Datum, Seitenzahl) werden über dessen Druckdialog ausgeschaltet: „Weitere Einstellungen → Kopf- und Fußzeilen“. Die Anwendung selbst druckt keine Link-Fußzeile.

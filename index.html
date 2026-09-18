@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Abnahmedokumentation – Streckenpflegearbeiten – Rahmenvereinbarung 2023–2028 WEST</title>
-  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body>
   <main>
@@ -34,8 +34,8 @@
               <option value="">Bitte auswählen</option>
               <option>Maschinenring Donauland</option>
               <option>Maschinenring OÖ Zentralraum</option>
-              <option>Maschinenring Ried</option>
-              <option>Maschinenring Granitland</option>
+              <option>Maschinenring Linz</option>
+              <option>Maschinenring Service</option>
             </select></label>
           <label class="field-contract">Leistungsabruf<select name="contract" required>
                 <option value="">Bitte auswählen</option>
@@ -54,7 +54,7 @@
                 <option>2032</option>
                 <option>2033</option>
               </select></label>
-          <label class="field-cycle">Pflegekampagne
+          <label class="field-cycle"><span class="cycle-label">Pflegekampagne</span>
             <select name="cycle" required>
               <option value="">Bitte auswählen</option>
               <option>Frühjahrsmahd</option>
@@ -72,9 +72,17 @@
             <h3>Durchgeführte Leistungen</h3>
             <p>Leistung auswählen und Bereich oder ergänzende Angaben eintragen.</p>
           </div>
-          <button class="button button-secondary no-print" type="button" id="add-row">+ Leistung hinzufügen</button>
+          <div class="service-actions no-print"><button class="button button-primary" type="button" id="choose-services" aria-expanded="false" aria-controls="service-picker">Mehrere Leistungen auswählen</button><button class="button button-secondary" type="button" id="add-row">+ Einzelne Leistung</button></div>
         </div>
 
+        <section id="service-picker" class="service-picker no-print" hidden aria-label="Leistungen mit Checkboxen auswählen">
+          <h3>Leistungen gemeinsam hinzufügen</h3>
+          <p>Gewünschte Arbeitsschritte ankreuzen. Jeder Schritt erhält eine eigene Zeile; Bereich und Datum werden gemeinsam übernommen und bleiben einzeln änderbar.</p>
+          <div class="form-grid"><label>Gemeinsamer Bereich (optional)<input id="batch-area" maxlength="10000" placeholder="Wegabschnitt oder Bereich"></label><label>Abgeschlossen am (optional)<input id="batch-date" type="date"></label></div>
+          <div id="service-choices" class="service-choices"></div>
+          <div class="service-actions"><button type="button" class="button button-primary" id="apply-services">Auswahl übernehmen</button><button type="button" class="button button-secondary" id="cancel-services">Abbrechen</button></div>
+          <p id="service-picker-status" role="status" aria-live="polite"></p>
+        </section>
         <div class="table-wrap">
           <table>
             <thead>
@@ -116,9 +124,12 @@
         </section>
         <p id="photo-print-reference" hidden></p>
 
-        <p class="legal-note">
-          Der Maschinenring bestätigt die angeführte Ausführung. viadonau bestätigt das dokumentierte Ergebnis der Sichtkontrolle; vermerkte Nacharbeiten bleiben offen. Diese Abnahmedokumentation dient der Leistungsdokumentation; Mengen werden ausschließlich bei den gekennzeichneten Aufmaßpositionen erfasst. Eine rechnerische Rechnungsfreigabe ist damit nicht verbunden. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.
-        </p>
+        <section class="legal-note" aria-label="Bestätigung und Abrechnungsgrundlage">
+          <p>Maschinenring OÖ Service eGen bzw. die lokal zuständigen Maschinenringpartner i. A. des Maschinenring OÖ Service eGen bestätigen die angeführte Leistung gemäß den Vorgaben der Ausschreibung.</p>
+          <p>viadonau bestätigt das dokumentierte Ergebnis der Sichtkontrolle inkl. den beidseits getroffenen Anmerkungen.</p>
+          <p>Diese Abnahmedokumentation dient der Leistungsdokumentation; Mengen werden ausschließlich bei den gekennzeichneten Aufmaßpositionen erfasst. Abrechnungsbasis sind grundsätzlich die jährlich übermittelten Leistungstabellen.</p>
+          <p>Eine rechnerische Rechnungsfreigabe ist damit nicht verbunden. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.</p>
+        </section>
 
         <div class="signatures">
           <section class="signature-card">
@@ -157,6 +168,7 @@
         <strong>Datenschutz:</strong> Die Eingaben bleiben ausschließlich in diesem Browser und werden nicht an einen Server übertragen. Speichere deinen Entwurf vor dem Schließen. Die heruntergeladene Datei enthält auch Namen, Unterschriften und Fotos. Es gibt keine automatische Synchronisierung zwischen Geräten.
       </aside>
 
+      <p class="print-help no-print">Ohne Link in der Fußzeile drucken: Im Druckdialog unter „Weitere Einstellungen“ die Option „Kopf- und Fußzeilen“ deaktivieren.</p>
       <div class="action-bar no-print">
         <button type="button" class="button button-ghost" id="reset-form">Neue Abnahmedokumentation</button>
         <button type="submit" class="button button-primary">PDF erstellen / drucken</button>
@@ -238,7 +250,8 @@
     </tr>
   </template>
 
-  <script src="photos.js?v=14"></script>
-  <script src="app.js?v=14"></script>
+  <script src="photos.js?v=15"></script>
+  <script src="app.js?v=15"></script>
+  <script src="service-picker.js?v=15"></script>
 </body>
 </html>

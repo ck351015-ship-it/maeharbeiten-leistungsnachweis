@@ -115,8 +115,8 @@ const photoManager = (() => {
     isBusy: () => busy,
     export: () => ({ photos: photos.map(photo => ({ ...photo })), includePhotos: include.checked }),
     restore(data) {
-      photos = (data.version === 6 ? data.photos : []).map(photo => ({ data: photo.data, caption: photo.caption }));
-      include.checked = data.version === 6 ? data.includePhotos : true;
+      photos = (data.version >= 6 ? data.photos : []).map(photo => ({ data: photo.data, caption: photo.caption }));
+      include.checked = data.version >= 6 ? data.includePhotos : true;
       message('');
       render();
     },

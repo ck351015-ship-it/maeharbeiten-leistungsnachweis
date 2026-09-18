@@ -238,7 +238,7 @@ window.addEventListener('beforeunload', event => {
 });
 function collectDraft() {
   return {
-    format: 'viadonau-maeharbeiten', version: 6, id: draftId,
+    format: 'viadonau-maeharbeiten', version: 7, id: draftId,
     ...photoManager.export(),
     savedAt: new Date().toISOString(),
     fields: Object.fromEntries(masterNames.map(name => [name, form.elements[name].value])),
@@ -247,8 +247,8 @@ function collectDraft() {
   };
 }
 function validateDraft(data) {
-  const fail = () => { throw new Error('Die Datei ist kein gültiger Abnahmedokumentation-Entwurf (Version 1 bis 6).'); };
-  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4, 5, 6].includes(data.version) ||
+  const fail = () => { throw new Error('Die Datei ist kein gültiger Abnahmedokumentation-Entwurf (Version 1 bis 7).'); };
+  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4, 5, 6, 7].includes(data.version) ||
       typeof data.id !== 'string' || data.id.length > 100 || !data.fields || !data.signatures ||
       !Array.isArray(data.sections) || data.sections.length < 1 || data.sections.length > 200) fail();
   function fields(value, names) {
@@ -262,7 +262,7 @@ function validateDraft(data) {
   }
   fields(data.fields, masterNames.filter(name => !(data.version < 5 && name === 'vdComment') && !(data.version === 1 && ['year', 'additionalNotes'].includes(name))));
   if (data.version >= 2 && (
-    !['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland'].includes(data.fields.contractor) ||
+    !['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland', 'Maschinenring Linz', 'Maschinenring Service'].includes(data.fields.contractor) ||
     !['', '1. Leistungsabruf', '2. Leistungsabruf', '3. Leistungsabruf'].includes(data.fields.contract) ||
     !['', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033'].includes(data.fields.year))) fail();
   if (!(data.version < 4 ? ['', '1. Mähdurchgang', '2. Mähdurchgang', '3. Mähdurchgang', 'Sonderdurchgang'] : ["","Frühjahrsmahd","Herbstmahd","Zwischenmahd","Pflegearbeiten Allgemein (z.B. Holzen, Streichen)"]).includes(data.fields.cycle)) fail();
@@ -334,19 +334,31 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
     if (data.version < 4) data = upgradeWorkCategory(data);
     if (data.version < 5) data = upgradeComments(data);
     await photoManager.decode(data);
+    const changedDeclaration = data.version < 7;
+    if (changedDeclaration) data = { ...data, signatures: { 'mr-signature': null, 'vd-signature': null } };
     const images = await decodeSignatures(data);
     if (dirty && !window.confirm('Ungesicherte Eingaben durch den gespeicherten Entwurf ersetzen?')) return;
+    const contractorSelect = form.elements.contractor;
+    contractorSelect.querySelectorAll('[data-historical]').forEach(option => option.remove());
+    if (data.fields.contractor && !Array.from(contractorSelect.options).some(option => option.value === data.fields.contractor)) {
+      const option = new Option(data.fields.contractor + ' (bisheriger Entwurf)', data.fields.contractor);
+      option.dataset.historical = 'true';
+      contractorSelect.add(option);
+    }
     masterNames.forEach(name => { form.elements[name].value = data.fields[name]; });
+    document.dispatchEvent(new Event('draft-opened'));
     rows.replaceChildren();
     data.sections.forEach(addRow);
     signatureIds.forEach((id, i) => signaturePads.get(id).restore(images[i]));
     photoManager.restore(data);
     draftId = data.id;
-    dirty = false;
+    dirty = changedDeclaration;
     showStatus(legacyCycle
       ? 'Entwurf übernommen. Bitte die Art der Arbeiten neu auswählen und erneut unterschreiben. Der bisherige Mähdurchgang steht in den Anmerkungen.'
       : migrated
       ? 'Älterer Entwurf übernommen. Bitte Standort, Leistungsabruf und Jahr prüfen und erneut unterschreiben. Frühere freie Auftragsangaben stehen in den Anmerkungen.'
+      : changedDeclaration
+      ? 'Entwurf samt Fotos übernommen. Der Bestätigungstext wurde aktualisiert; bitte prüfen und erneut unterschreiben.'
       : 'Entwurf geöffnet – einschließlich gespeicherter Unterschriften und Fotos. Nach der Bearbeitung erneut speichern und die neue Datei weitergeben.');
   } catch (error) {
     showStatus('Entwurf konnte nicht geöffnet werden. ' + (error instanceof SyntaxError ? 'Die Datei enthält kein gültiges JSON.' : error.message) + ' Bestehende Eingaben bleiben erhalten.');
@@ -357,7 +369,7 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
 
 function migrateLegacyDraft(data) {
   const old = data.fields;
-  const contractors = ['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland'];
+  const contractors = ['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland', 'Maschinenring Linz', 'Maschinenring Service'];
   const contracts = ['', '1. Leistungsabruf', '2. Leistungsabruf', '3. Leistungsabruf'];
   const contractor = contractors.includes(old.contractor) ? old.contractor : '';
   const contract = contracts.includes(old.contract) ? old.contract : '';
