@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Abnahmedokumentation – Streckenpflegearbeiten – Rahmenvereinbarung 2023–2028 WEST</title>
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
 </head>
 <body>
   <main>
@@ -70,19 +70,11 @@
         <div class="section-title">
           <div>
             <h3>Durchgeführte Leistungen</h3>
-            <p>Leistung auswählen und Bereich oder ergänzende Angaben eintragen.</p>
+            <p>Eine oder mehrere Leistungen im Dropdown ankreuzen und den gemeinsamen Bereich eintragen.</p>
           </div>
-          <div class="service-actions no-print"><button class="button button-primary" type="button" id="choose-services" aria-expanded="false" aria-controls="service-picker">Mehrere Leistungen auswählen</button><button class="button button-secondary" type="button" id="add-row">+ Einzelne Leistung</button></div>
+          <button class="button button-secondary no-print" type="button" id="add-row">+ Bereich / Zeile hinzufügen</button>
         </div>
 
-        <section id="service-picker" class="service-picker no-print" hidden aria-label="Leistungen mit Checkboxen auswählen">
-          <h3>Leistungen gemeinsam hinzufügen</h3>
-          <p>Gewünschte Arbeitsschritte ankreuzen. Jeder Schritt erhält eine eigene Zeile; Bereich und Datum werden gemeinsam übernommen und bleiben einzeln änderbar.</p>
-          <div class="form-grid"><label>Gemeinsamer Bereich (optional)<input id="batch-area" maxlength="10000" placeholder="Wegabschnitt oder Bereich"></label><label>Abgeschlossen am (optional)<input id="batch-date" type="date"></label></div>
-          <div id="service-choices" class="service-choices"></div>
-          <div class="service-actions"><button type="button" class="button button-primary" id="apply-services">Auswahl übernehmen</button><button type="button" class="button button-secondary" id="cancel-services">Abbrechen</button></div>
-          <p id="service-picker-status" role="status" aria-live="polite"></p>
-        </section>
         <div class="table-wrap">
           <table>
             <thead>
@@ -250,8 +242,8 @@
     </tr>
   </template>
 
-  <script src="photos.js?v=15"></script>
-  <script src="app.js?v=15"></script>
-  <script src="service-picker.js?v=15"></script>
+  <script src="photos.js?v=16"></script>
+  <script src="service-picker.js?v=16"></script>
+  <script src="app.js?v=16"></script>
 </body>
 </html>

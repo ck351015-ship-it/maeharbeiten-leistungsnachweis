@@ -12,54 +12,27 @@ const template = document.querySelector('#section-row-template');
 
 function addRow(values = {}) {
   if (rows.children.length >= 200) {
-    showStatus('Maximal 200 Leistungen pro Abnahmedokumentation. Bitte eine weitere Abnahmedokumentation anlegen.');
+    showStatus('Maximal 200 Zeilen pro Abnahmedokumentation.');
     return;
   }
   const fragment = template.content.cloneNode(true);
   const row = fragment.querySelector('tr');
-
-  if (legacyServiceOptions.includes(values.service)) {
-    const option = document.createElement('option');
-    option.value = values.service;
-    option.textContent = values.service;
-    row.querySelector('[name="service[]"]').append(option);
+  const selections = values.services || (values.service ? [values.service] : []);
+  for (const service of selections) {
+    if (legacyServiceOptions.includes(service)) {
+      const option = new Option(service, service);
+      row.querySelector('[name="service[]"]').append(option);
+    }
   }
-  Object.entries(values).forEach(([name, value]) => {
-    const field = row.querySelector(`[name="${name}[]"]`);
-    if (field) field.value = value;
-  });
-
+  for (const name of ['area', 'completed', 'interimArea']) {
+    row.querySelector(`[name="${name}[]"]`).value = values[name] || '';
+  }
+  row.serviceDropdown = setupServiceDropdown(row, values);
   row.querySelector('.delete-row').addEventListener('click', () => {
     invalidateSignatures('both');
-    if (rows.children.length === 1) {
-      row.querySelectorAll('input, textarea, select').forEach(field => field.value = '');
-      row.querySelector('[name="service[]"]').dispatchEvent(new Event('change', { bubbles: true }));
-      return;
-    }
     row.remove();
+    if (!rows.children.length) addRow();
   });
-
-  const service = row.querySelector('[name="service[]"]');
-  const quantity = row.querySelector('[name="quantity[]"]');
-  const interimArea = row.querySelector('[name="interimArea[]"]');
-  const updateService = () => {
-    const unit = quantityUnit(service.value);
-    row.querySelector('.quantity-field').hidden = !unit;
-    row.querySelector('.quantity-label').textContent = unit;
-    quantity.setAttribute('aria-label', unit || 'Menge');
-    quantity.inputMode = unit === 'Stück' ? 'numeric' : 'decimal';
-    if (!unit) quantity.value = '';
-    const interim = service.value === 'Bankettstreifen Zwischenmahd';
-    row.querySelector('.interim-field').hidden = !interim;
-    if (!interim) interimArea.value = '';
-  };
-  service.addEventListener('change', () => {
-    // Measurements from a different service must not be carried over.
-    quantity.value = '';
-    interimArea.value = '';
-    updateService();
-  });
-  updateService();
   rows.append(fragment);
   return row;
 }
@@ -238,17 +211,20 @@ window.addEventListener('beforeunload', event => {
 });
 function collectDraft() {
   return {
-    format: 'viadonau-maeharbeiten', version: 7, id: draftId,
+    format: 'viadonau-maeharbeiten', version: 8, id: draftId,
     ...photoManager.export(),
     savedAt: new Date().toISOString(),
     fields: Object.fromEntries(masterNames.map(name => [name, form.elements[name].value])),
-    sections: Array.from(rows.children, row => Object.fromEntries(sectionNames.map(name => [name, row.querySelector(`[name="${name}[]"]`).value]))),
+    sections: Array.from(rows.children, row => ({
+      ...Object.fromEntries(['area', 'completed', 'interimArea'].map(name => [name, row.querySelector(`[name="${name}[]"]`).value])),
+      ...row.serviceDropdown.export()
+    })),
     signatures: Object.fromEntries(signatureIds.map(id => [id, signaturePads.get(id).export()]))
   };
 }
 function validateDraft(data) {
-  const fail = () => { throw new Error('Die Datei ist kein gültiger Abnahmedokumentation-Entwurf (Version 1 bis 7).'); };
-  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4, 5, 6, 7].includes(data.version) ||
+  const fail = () => { throw new Error('Die Datei ist kein gültiger Abnahmedokumentation-Entwurf (Version 1 bis 8).'); };
+  if (!data || data.format !== 'viadonau-maeharbeiten' || ![1, 2, 3, 4, 5, 6, 7, 8].includes(data.version) ||
       typeof data.id !== 'string' || data.id.length > 100 || !data.fields || !data.signatures ||
       !Array.isArray(data.sections) || data.sections.length < 1 || data.sections.length > 200) fail();
   function fields(value, names) {
@@ -268,7 +244,19 @@ function validateDraft(data) {
   if (!(data.version < 4 ? ['', '1. Mähdurchgang', '2. Mähdurchgang', '3. Mähdurchgang', 'Sonderdurchgang'] : ["","Frühjahrsmahd","Herbstmahd","Zwischenmahd","Pflegearbeiten Allgemein (z.B. Holzen, Streichen)"]).includes(data.fields.cycle)) fail();
   for (const row of data.sections) {
     fields(row, data.version < 3 ? legacySectionNames : data.version < 5 ? versionThreeSectionNames : sectionNames);
-    if (data.version >= 3) {
+    if (data.version >= 8) {
+      if (!Array.isArray(row.services) || row.services.length > serviceOptions.length + legacyServiceOptions.length ||
+          new Set(row.services).size !== row.services.length ||
+          row.services.some(service => !serviceOptions.includes(service) && !legacyServiceOptions.includes(service)) ||
+          !row.quantities || typeof row.quantities !== 'object' || Array.isArray(row.quantities)) fail();
+      if (row.service !== (row.services[0] || '') || row.quantity !== (row.quantities[row.services[0]] || '')) fail();
+      for (const [service, amount] of Object.entries(row.quantities)) {
+        const unit = quantityUnit(service);
+        if (!row.services.includes(service) || !unit || typeof amount !== 'string' || amount.length > 10000 ||
+            (amount && !(unit === 'Stück' ? /^\d+$/ : /^\d+(?:[.,]\d+)?$/).test(amount))) fail();
+      }
+      if (!row.services.includes('Bankettstreifen Zwischenmahd') && row.interimArea) fail();
+    } else if (data.version >= 3) {
       if (row.service !== '' && !serviceOptions.includes(row.service) && !legacyServiceOptions.includes(row.service)) fail();
       const unit = quantityUnit(row.service);
       if (!unit && row.quantity) fail();

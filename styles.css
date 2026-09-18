@@ -390,3 +390,19 @@ button:disabled { opacity: .55; cursor: wait; }
   .legal-note { font-size: 7.5pt; line-height: 1.4; }
   .legal-note p { margin-bottom: 2mm; }
 }
+
+/* Checkbox dropdown in each service row; shared area/date stay in that row. */
+.service-dropdown { border: 1px solid var(--line); border-radius: 7px; background: white; }
+.service-dropdown summary { padding: 10px 12px; min-height: 44px; font-size: 13px; font-weight: 600; cursor: pointer; overflow-wrap: anywhere; }
+.service-dropdown summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.service-dropdown-options { padding: 12px; border-top: 1px solid var(--line); max-height: 360px; overflow-y: auto; }
+.service-dropdown-options fieldset { margin: 0 0 12px; }
+.service-dropdown-options legend { color: var(--brand-dark); font-size: 13px; margin-bottom: 4px; }
+.service-dropdown-options .service-choice { margin: 0; align-items: flex-start; }
+.service-dropdown-options input[type="checkbox"] { min-height: 18px; height: 18px; margin: 0; }
+.service-print { display: none; }
+.service-measurements label { display: block; font-size: 12px; }
+@media print {
+  .service-print { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11pt; font-weight: 700; line-height: 1.4; }
+  .service-measurements label { font-size: 7.5pt; margin-top: 2mm; }
+}

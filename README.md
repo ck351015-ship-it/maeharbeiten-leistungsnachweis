@@ -36,7 +36,7 @@ Alle Formulardaten bleiben im Browser, bis der Benutzer eine Entwurfsdatei oder 
 
 Änderungen an gemeinsamen Leistungsangaben löschen beide Unterschriften. Änderungen an Kontrollfeldern löschen nur die viadonau-Unterschrift. Die Bestätigung ist anschließend zu erneuern. Entwürfe und PDFs können auch ohne digitale Unterschriften gespeichert werden. Vermerkte Nacharbeiten werden im Kommentar ausgegeben.
 
-Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt werden Formatversionen 1–7, maximal 200 Bereiche und 20 MB je Datei. Daten werden ausschließlich als Feldwerte eingesetzt, nicht als HTML ausgeführt.
+Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt werden Formatversionen 1–8, maximal 200 Bereiche und 20 MB je Datei. Daten werden ausschließlich als Feldwerte eingesetzt, nicht als HTML ausgeführt.
 
 ## Fotos zur Dokumentation
 
@@ -50,7 +50,7 @@ Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt w
 
 ## Mehrfachauswahl und Bestätigungstext
 
-Über „Mehrere Leistungen auswählen“ können mehrere Arbeitsschritte per Checkbox gemeinsam hinzugefügt werden. Bereich und Abschlussdatum lassen sich gemeinsam vorgeben; jede Leistung bleibt eine eigene Zeile mit ihren Aufmaßfeldern.
+Direkt im Leistungs-Dropdown jeder Zeile können mehrere Arbeitsschritte per Checkbox ausgewählt werden. Sie teilen sich Bereich und Abschlussdatum. Für jede ausgewählte Aufmaßposition erscheint ein eigenes Mengenfeld. Entwurfsformat 8 speichert die Auswahl und die zugehörigen Mengen; ältere Einzelpositionen bleiben lesbar.
 
 Entwurfsformat 7 verwendet den aktualisierten Bestätigungstext. Bei älteren Entwürfen werden Unterschriften entfernt und eine erneute Bestätigung verlangt; Angaben und Fotos bleiben erhalten. Frühere Maschinenring-Namen werden in importierten Entwürfen als historische Einträge angezeigt und nicht stillschweigend umbenannt.
 
