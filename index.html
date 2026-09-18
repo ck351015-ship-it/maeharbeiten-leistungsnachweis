@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Abnahmedokumentation – Streckenpflegearbeiten – Rahmenvereinbarung 2023–2028 WEST</title>
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="stylesheet" href="styles.css?v=17">
 </head>
 <body>
   <main>
@@ -13,7 +13,9 @@
       <div class="draft-tools no-print">
         <p><strong>Gemeinsam arbeiten – ohne Anmeldung</strong><br>Entwurf speichern, Datei weitergeben und am anderen Gerät hier öffnen. Eingaben, Unterschriften und Fotos sind in der Datei enthalten.</p>
         <button type="button" class="button button-secondary" id="open-draft">Entwurf öffnen</button>
-        <button type="button" class="button button-secondary" id="save-draft">Entwurf speichern / weitergeben</button>
+        <button type="button" class="button button-secondary" id="save-draft">Entwurf speichern</button>
+        <button type="button" class="button button-primary" id="share-draft" aria-expanded="false" aria-controls="share-options">Entwurf teilen</button>
+        <div id="share-options" hidden><button type="button" class="button button-secondary" id="share-native">Datei über Gerät teilen</button><button type="button" class="button button-secondary" id="share-whatsapp">WhatsApp</button><button type="button" class="button button-secondary" id="share-email">E-Mail</button><p>Über die Gerätefreigabe lässt sich die Entwurfsdatei direkt an eine unterstützte App übergeben. Bei WhatsApp oder E-Mail wird die Datei heruntergeladen: Bitte selbst als Anhang hinzufügen.</p></div>
         <input type="file" id="draft-file" accept=".json,application/json" hidden>
         <p id="draft-status" role="status" aria-live="polite">Entwürfe und PDFs können jederzeit gespeichert werden – auch ohne digitale Unterschrift zum Unterschreiben auf Papier.</p>
       </div>
@@ -30,20 +32,20 @@
         </div>
 
         <div class="form-grid master-data">
-          <label class="field-contractor">Maschinenring-Standort<select name="contractor" required>
+          <label class="field-contractor"><span class="field-label">Maschinenring-Standort</span><select name="contractor" required>
               <option value="">Bitte auswählen</option>
               <option>Maschinenring Donauland</option>
               <option>Maschinenring OÖ Zentralraum</option>
               <option>Maschinenring Linz</option>
-              <option>Maschinenring Service</option>
+              <option>Maschinenring Schärding</option>
             </select></label>
-          <label class="field-contract">Leistungsabruf<select name="contract" required>
+          <label class="field-contract"><span class="field-label">Leistungsabruf</span><select name="contract" required>
                 <option value="">Bitte auswählen</option>
                 <option>1. Leistungsabruf</option>
                 <option>2. Leistungsabruf</option>
                 <option>3. Leistungsabruf</option>
               </select></label>
-          <label class="field-year">Jahr<select name="year" required>
+          <label class="field-year"><span class="field-label">Jahr</span><select name="year" required>
                 <option value="">Bitte auswählen</option>
                 <option>2026</option>
                 <option>2027</option>
@@ -54,7 +56,7 @@
                 <option>2032</option>
                 <option>2033</option>
               </select></label>
-          <label class="field-cycle"><span class="cycle-label">Pflegekampagne</span>
+          <label class="field-cycle"><span class="field-label cycle-label">Pflegekampagne</span>
             <select name="cycle" required>
               <option value="">Bitte auswählen</option>
               <option>Frühjahrsmahd</option>
@@ -63,8 +65,8 @@
               <option>Pflegearbeiten Allgemein (z.B. Holzen, Streichen)</option>
             </select>
           </label>
-          <label class="field-from">Ausführung von<input type="date" name="periodFrom" required></label>
-          <label class="field-to">Ausführung bis<input type="date" name="periodTo" required></label>
+          <label class="field-from"><span class="field-label">Ausführung von</span><input type="date" name="periodFrom" required></label>
+          <label class="field-to"><span class="field-label">Ausführung bis</span><input type="date" name="periodTo" required></label>
         </div>
 
         <div class="section-title">
@@ -123,6 +125,7 @@
           <p>Eine rechnerische Rechnungsfreigabe ist damit nicht verbunden. Nicht erkennbare Mängel und Schäden bleiben vorbehalten.</p>
         </section>
 
+        <p class="correction-note no-print"><strong>Korrekturen und erneute Freigabe:</strong> Werden bestätigte Angaben, Anmerkungen oder Fotos geändert, werden vorhandene Unterschriften gelöscht. Den korrigierten Entwurf bitte erneut speichern und der Gegenseite zur Prüfung und Unterfertigung übermitteln.</p>
         <div class="signatures">
           <section class="signature-card">
             <h3>Streckenverantwortlicher Maschinenring</h3>
@@ -160,7 +163,6 @@
         <strong>Datenschutz:</strong> Die Eingaben bleiben ausschließlich in diesem Browser und werden nicht an einen Server übertragen. Speichere deinen Entwurf vor dem Schließen. Die heruntergeladene Datei enthält auch Namen, Unterschriften und Fotos. Es gibt keine automatische Synchronisierung zwischen Geräten.
       </aside>
 
-      <p class="print-help no-print">Ohne Link in der Fußzeile drucken: Im Druckdialog unter „Weitere Einstellungen“ die Option „Kopf- und Fußzeilen“ deaktivieren.</p>
       <div class="action-bar no-print">
         <button type="button" class="button button-ghost" id="reset-form">Neue Abnahmedokumentation</button>
         <button type="submit" class="button button-primary">PDF erstellen / drucken</button>
@@ -242,8 +244,9 @@
     </tr>
   </template>
 
-  <script src="photos.js?v=16"></script>
-  <script src="service-picker.js?v=16"></script>
-  <script src="app.js?v=16"></script>
+  <script src="photos.js?v=17"></script>
+  <script src="service-picker.js?v=17"></script>
+  <script src="app.js?v=17"></script>
+  <script src="share.js?v=17"></script>
 </body>
 </html>

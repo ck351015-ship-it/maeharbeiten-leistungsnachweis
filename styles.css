@@ -406,3 +406,24 @@ button:disabled { opacity: .55; cursor: wait; }
   .service-print { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11pt; font-weight: 700; line-height: 1.4; }
   .service-measurements label { font-size: 7.5pt; margin-top: 2mm; }
 }
+
+/* Consistent caption/value rows, with the campaign value as the emphasis. */
+.master-data { align-items: start; }
+.master-data > label { display: grid; grid-template-rows: minmax(18px, auto) auto; gap: 6px; align-content: start; }
+.master-data .field-label { display: block; line-height: 18px; }
+#share-options { padding: 12px; margin: 8px 0; border: 1px solid var(--line); border-radius: 8px; background: white; }
+#share-options p { margin: 4px 0 0; font-size: 12px; }
+.correction-note { margin: 16px 0; padding: 12px 15px; border-left: 3px solid var(--brand); background: var(--brand-light); font-size: 13px; line-height: 1.5; }
+@media print {
+  /* No bottom page-margin area for browser-generated URL footers. */
+  @page { size: A4 portrait; margin: 12mm 12mm 0; }
+  @page photoPortrait { size: A4 portrait; margin: 12mm 12mm 0; }
+  .sheet { padding-bottom: 12mm; }
+  .photo-print-page { padding-bottom: 12mm; }
+  .master-data > label { grid-template-rows: 4mm auto; gap: 1mm; align-content: start; }
+  .master-data .field-label, .master-data .cycle-label { font-size: 7.5pt; line-height: 4mm; font-weight: 400; color: #52676d; }
+  .master-data .print-value { min-height: 6mm; padding: 0 0 1mm; font-size: 9pt; line-height: 1.4; }
+  .master-data .field-cycle .print-value { font-size: 12pt; font-weight: 700; line-height: 1.3; }
+  .signature-meta { align-items: start; }
+  .signature-meta .print-value { min-height: 6mm; }
+}

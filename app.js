@@ -196,13 +196,12 @@ function invalidateSignatures(who) {
     const pad = signaturePads.get(id);
     if (pad.export()) { pad.clear(); removed = true; }
   });
-  if (removed) showStatus('Bestätigte Angaben geändert: Die betroffenen Unterschriften wurden gelöscht. Bitte erneut bestätigen.');
+  if (removed) showStatus('Korrektur vorgenommen: Vorhandene Unterschriften wurden gelöscht. Bitte den korrigierten Entwurf speichern und der Gegenseite erneut zur Prüfung und Unterfertigung senden.');
 }
 function fieldChanged(event) {
   const name = event.target.name;
   if (!name) return;
-  const controls = ['vdComment', 'vdName', 'vdDate'];
-  invalidateSignatures(controls.includes(name) ? 'vd' : 'both');
+  invalidateSignatures('both');
 }
 form.addEventListener('input', fieldChanged);
 form.addEventListener('change', fieldChanged);
@@ -238,7 +237,7 @@ function validateDraft(data) {
   }
   fields(data.fields, masterNames.filter(name => !(data.version < 5 && name === 'vdComment') && !(data.version === 1 && ['year', 'additionalNotes'].includes(name))));
   if (data.version >= 2 && (
-    !['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland', 'Maschinenring Linz', 'Maschinenring Service'].includes(data.fields.contractor) ||
+    !['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland', 'Maschinenring Linz', 'Maschinenring Service', 'Maschinenring Schärding'].includes(data.fields.contractor) ||
     !['', '1. Leistungsabruf', '2. Leistungsabruf', '3. Leistungsabruf'].includes(data.fields.contract) ||
     !['', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033'].includes(data.fields.year))) fail();
   if (!(data.version < 4 ? ['', '1. Mähdurchgang', '2. Mähdurchgang', '3. Mähdurchgang', 'Sonderdurchgang'] : ["","Frühjahrsmahd","Herbstmahd","Zwischenmahd","Pflegearbeiten Allgemein (z.B. Holzen, Streichen)"]).includes(data.fields.cycle)) fail();
@@ -283,26 +282,34 @@ async function decodeSignatures(data) {
     return image;
   }));
 }
-function saveDraft() {
-  if (photoManager.isBusy()) { showStatus('Bitte warten, bis die Fotos verarbeitet sind.'); return; }
+function createDraftFile() {
+  if (photoManager.isBusy()) throw new Error('Bitte warten, bis die Fotos verarbeitet sind.');
   let data;
   try { data = validateDraft(collectDraft()); } catch {
-    showStatus('Entwurf konnte nicht gespeichert werden. Bitte Datum und Mengen prüfen (Stück: ganze Zahl; Tonnen: Zahl mit Komma oder Punkt). Texte dürfen höchstens 10.000 Zeichen pro Feld enthalten.');
-    return;
+    throw new Error('Bitte Datum, Mengen und Textlängen prüfen.');
   }
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  if (blob.size > 20000000) { showStatus('Entwurf zu groß. Bitte auf mehrere Abnahmedokumentationen aufteilen.'); return; }
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
   const name = ([data.fields.contract || 'Entwurf', data.fields.year].filter(Boolean).join('_')).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60);
+  const filename = `Abnahmedokumentation_${name}_${data.savedAt.slice(0, 19).replace(/:/g, '-')}.json`;
+  const file = new File([JSON.stringify(data, null, 2)], filename, { type: 'application/json' });
+  if (file.size > 20000000) throw new Error('Entwurf zu groß. Bitte auf mehrere Abnahmedokumentationen aufteilen.');
+  return file;
+}
+function downloadDraftFile(file) {
+  const url = URL.createObjectURL(file);
+  const link = document.createElement('a');
   link.href = url;
-  link.download = `Abnahmedokumentation_${name}_${data.savedAt.slice(0, 19).replace(/:/g, '-')}.json`;
+  link.download = file.name;
   document.body.append(link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
   dirty = false;
-  showStatus('Download gestartet. Die gespeicherte Abnahmedokumentation-Datei per E-Mail oder Teams weitergeben. Der Empfänger öffnet sie hier über „Entwurf öffnen“.');
+}
+function saveDraft() {
+  try {
+    downloadDraftFile(createDraftFile());
+    showStatus('Download gestartet. Entwurfsdatei zur Prüfung und Unterfertigung weitergeben. Die Gegenseite öffnet sie hier über „Entwurf öffnen“.');
+  } catch (error) { showStatus('Entwurf konnte nicht gespeichert werden. ' + error.message); }
 }
 document.querySelector('#save-draft').addEventListener('click', saveDraft);
 document.querySelector('#open-draft').addEventListener('click', () => document.querySelector('#draft-file').click());
@@ -357,7 +364,7 @@ document.querySelector('#draft-file').addEventListener('change', async event => 
 
 function migrateLegacyDraft(data) {
   const old = data.fields;
-  const contractors = ['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland', 'Maschinenring Linz', 'Maschinenring Service'];
+  const contractors = ['', 'Maschinenring Donauland', 'Maschinenring OÖ Zentralraum', 'Maschinenring Ried', 'Maschinenring Granitland', 'Maschinenring Linz', 'Maschinenring Service', 'Maschinenring Schärding'];
   const contracts = ['', '1. Leistungsabruf', '2. Leistungsabruf', '3. Leistungsabruf'];
   const contractor = contractors.includes(old.contractor) ? old.contractor : '';
   const contract = contracts.includes(old.contract) ? old.contract : '';

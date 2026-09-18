@@ -34,7 +34,7 @@ Alle Formulardaten bleiben im Browser, bis der Benutzer eine Entwurfsdatei oder 
 4. Gewässermeister nutzt „Entwurf öffnen“, ergänzt Kontrollfelder und unterschreibt.
 5. Aktualisierten Entwurf speichern und PDF über den Browser drucken.
 
-Änderungen an gemeinsamen Leistungsangaben löschen beide Unterschriften. Änderungen an Kontrollfeldern löschen nur die viadonau-Unterschrift. Die Bestätigung ist anschließend zu erneuern. Entwürfe und PDFs können auch ohne digitale Unterschriften gespeichert werden. Vermerkte Nacharbeiten werden im Kommentar ausgegeben.
+Änderungen an gemeinsamen Leistungsangaben löschen beide Unterschriften. Auch Änderungen an Kontrollfeldern löschen beide Unterschriften; die korrigierte Fassung muss erneut zur Freigabe übermittelt werden. Die Bestätigung ist anschließend zu erneuern. Entwürfe und PDFs können auch ohne digitale Unterschriften gespeichert werden. Vermerkte Nacharbeiten werden im Kommentar ausgegeben.
 
 Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt werden Formatversionen 1–8, maximal 200 Bereiche und 20 MB je Datei. Daten werden ausschließlich als Feldwerte eingesetzt, nicht als HTML ausgeführt.
 
@@ -54,4 +54,10 @@ Direkt im Leistungs-Dropdown jeder Zeile können mehrere Arbeitsschritte per Che
 
 Entwurfsformat 7 verwendet den aktualisierten Bestätigungstext. Bei älteren Entwürfen werden Unterschriften entfernt und eine erneute Bestätigung verlangt; Angaben und Fotos bleiben erhalten. Frühere Maschinenring-Namen werden in importierten Entwürfen als historische Einträge angezeigt und nicht stillschweigend umbenannt.
 
-Vom Browser ergänzte Druckfußzeilen (URL, Datum, Seitenzahl) werden über dessen Druckdialog ausgeschaltet: „Weitere Einstellungen → Kopf- und Fußzeilen“. Die Anwendung selbst druckt keine Link-Fußzeile.
+Der untere Seitenrand ist im Drucklayout auf 0 gesetzt, um die automatisch ergänzte Browser-Fußzeile zu unterdrücken. Eigene Druckeinstellungen können dies übersteuern. Der bisherige Druckhinweis ist entfernt.
+
+## Entwurf teilen
+
+„Entwurf teilen“ bietet die Gerätefreigabe (sofern Dateifreigabe unterstützt wird), WhatsApp und E-Mail. Gerätefreigabe übergibt die JSON-Datei einschließlich Fotos. WhatsApp-/mailto-Links können keine lokalen Anhänge setzen: Die Datei wird daher heruntergeladen und muss vom Benutzer angehängt werden. Es wird kein Empfänger vorgegeben und keine Nachricht automatisch versendet.
+
+Der aktuelle Standortname lautet Maschinenring Schärding; historische Entwürfe behalten ihre bisherigen Namen.
