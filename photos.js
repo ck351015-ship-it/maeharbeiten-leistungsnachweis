@@ -10,7 +10,7 @@ const photoManager = (() => {
   const message = text => { status.textContent = text; };
   function lock(value) {
     busy = value;
-    document.querySelectorAll('#photo-camera, #photo-select, #save-draft, #open-draft, #reset-form, [type="submit"]').forEach(button => { button.disabled = value; });
+    document.querySelectorAll('#photo-select, #save-draft, #open-draft, #reset-form, [type="submit"]').forEach(button => { button.disabled = value; });
     grid.querySelectorAll('button, input').forEach(control => { control.disabled = value; });
     include.disabled = value;
   }
@@ -107,9 +107,7 @@ const photoManager = (() => {
       message([added ? `${added} Foto(s) hinzugefügt. Bitte den Entwurf speichern, damit die Fotos erhalten bleiben.` : '', ...errors].filter(Boolean).join(' '));
     }
   }
-  document.querySelector('#photo-camera').onclick = () => document.querySelector('#photo-camera-file').click();
   document.querySelector('#photo-select').onclick = () => document.querySelector('#photo-files').click();
-  document.querySelector('#photo-camera-file').onchange = addFiles;
   document.querySelector('#photo-files').onchange = addFiles;
   include.onchange = () => invalidateSignatures('both');
   render();

@@ -132,7 +132,7 @@ td input, td select, td textarea { margin: 0; font-size: 12px; }
 }
 
 @media print {
-  @page { size: A4 landscape; margin: 9mm; }
+  @page { size: A4 portrait; margin: 12mm; }
   :root { background: white; }
   body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .no-print { display: none !important; }
@@ -334,4 +334,38 @@ button:disabled { opacity: .55; cursor: wait; }
   .photo-print-page figure { margin: 0 0 6mm; break-inside: avoid; }
   .photo-print-page img { display: block; width: 100%; height: 86mm; object-fit: contain; }
   .photo-print-page figcaption { margin-top: 2mm; font-size: 10px; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; }
+}
+
+/* Print hierarchy: service first, smaller location details beneath it. */
+@media print {
+  body { min-width: 0; }
+  .document-head { padding-bottom: 3mm; border-bottom-width: 2px; }
+  .document-head h2 { font-size: 20pt; }
+  .document-subtitle { font-size: 9pt; line-height: 1.35; }
+  .master-data { padding: 3mm; gap: 2mm 4mm; margin: 4mm 0 5mm; }
+  .master-data > label { font-size: 7.5pt; line-height: 1.35; }
+  .master-data .print-value { font-size: 9pt; line-height: 1.35; min-height: 0; }
+  .section-title h3 { font-size: 11pt; margin-bottom: 2mm; }
+  .table-wrap { border: 1px solid #bac9cc; }
+  th { padding: 2.5mm 3mm; font-size: 8.5pt; background: #edf3f4; color: #17333a; border-bottom: 1px solid #9fafb3; }
+  th:nth-child(1) { width: 80%; }
+  th:nth-child(2) { width: 20%; }
+  tbody tr { break-inside: avoid; }
+  tbody tr:nth-child(even) { background: #f6f8f8; }
+  td { padding: 3mm; border-bottom: 1px solid #cedadd; }
+  td .print-value { border: 0; padding: 0; min-height: 0; font-size: 9pt; line-height: 1.4; }
+  td .print-service { font-size: 11pt; font-weight: 700; line-height: 1.3; color: #17333a; }
+  td .area-label { margin: 2mm 0 .5mm; font-size: 7.5pt; font-weight: 400; color: #52676d; }
+  td .print-area { font-size: 9pt; font-weight: 400; line-height: 1.4; }
+  td .print-completed { font-size: 9pt; white-space: nowrap; }
+  td .quantity-field, td .interim-field { margin-top: 2mm; font-size: 7.5pt; }
+  .additional-notes { margin: 4mm 0; padding: 3mm; break-inside: avoid; }
+  .additional-notes label { font-size: 9pt; }
+  .notes-print { font-size: 9pt; line-height: 1.4; margin-top: 1.5mm; }
+  .legal-note { margin: 4mm 0; padding: 2mm 3mm; font-size: 7pt; line-height: 1.4; }
+  .signature-card { padding: 3mm; border-radius: 0; }
+  .signature-card h3 { font-size: 9pt; }
+  .signature-meta label { font-size: 7.5pt; }
+  .signature-meta .print-value { font-size: 9pt; }
+  .signature-pad { height: 16mm; }
 }

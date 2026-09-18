@@ -172,6 +172,9 @@ function preparePrintSignatures() {
     if (['additionalNotes', 'vdComment'].includes(field.name) || field.hidden || field.closest('[hidden], .no-print')) return;
     const value = document.createElement('span');
     value.className = 'print-value';
+    if (field.name === 'service[]') value.classList.add('print-service');
+    if (field.name === 'area[]') value.classList.add('print-area');
+    if (field.name === 'completed[]') value.classList.add('print-completed');
     let text = field.tagName === 'SELECT' && field.value
       ? field.selectedOptions[0].textContent
       : field.value;

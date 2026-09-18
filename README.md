@@ -8,7 +8,7 @@ Statische, datensparsame Webanwendung zur gemeinsamen Dokumentation und Sichtabn
 - bis zu 200 Streckenabschnitte pro Lieferschein
 - gemeinsamer viadonau-Kommentar für Kontrolle und Nacharbeiten
 - Unterschriften mit Maus, Stift oder Touchscreen
-- druckoptimierte A4-Querformat-Ausgabe über „PDF erstellen / drucken“
+- druckoptimierte A4-Hochformat-Ausgabe über „PDF erstellen / drucken“
 - Entwurf als JSON-Datei speichern und an einem anderen Gerät wieder öffnen
 - Eingaben, Unterschriften und Fotos vollständig in der Entwurfsdatei
 - erneute Unterschrift nach Änderungen an bestätigten Angaben
@@ -40,7 +40,7 @@ Die Importprüfung erfolgt vor dem Ersetzen vorhandener Eingaben. Unterstützt w
 
 ## Fotos zur Dokumentation
 
-- Vor den Unterschriften können bis zu 12 Fotos aufgenommen oder gemeinsam ausgewählt werden. Die Kameraauswahl hängt vom Gerät und Browser ab.
+- Vor den Unterschriften können bis zu 12 Fotos gemeinsam über „Fotos auswählen“ hinzugefügt werden.
 - Bilder werden lokal auf maximal 1600 Pixel Kantenlänge verkleinert und als JPEG gespeichert (unter 1 MB Daten-URL pro Bild). Es werden keine Fotos hochgeladen. Nicht unterstützte Formate werden mit einem Hinweis abgewiesen.
 - Zu jedem Foto ist eine Beschreibung mit maximal 500 Zeichen möglich. Fotos lassen sich einzeln entfernen.
 - „Entwurf speichern / weitergeben“ enthält Fotos und Beschreibungen vollständig; ohne erneutes Speichern gehen Änderungen beim Schließen verloren.

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Abnahmedokumentation – Streckenpflegearbeiten – Rahmenvereinbarung 2023–2028 WEST</title>
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
 </head>
 <body>
   <main>
@@ -104,10 +104,8 @@
         <section class="photo-editor no-print" aria-labelledby="photo-heading">
           <div class="section-title"><div><h3 id="photo-heading">Fotos zur Dokumentation</h3><p>Optional · ausgeführte Arbeiten, Übersicht oder Besonderheiten</p></div><span id="photo-count" aria-live="polite"></span></div>
           <div class="photo-actions">
-            <button type="button" class="button button-primary" id="photo-camera">Foto aufnehmen</button>
-            <button type="button" class="button button-secondary" id="photo-select">Fotos auswählen</button>
+            <button type="button" class="button button-primary" id="photo-select">Fotos auswählen</button>
           </div>
-          <input id="photo-camera-file" type="file" accept="image/*" capture="environment" hidden>
           <input id="photo-files" type="file" accept="image/*" multiple hidden>
           <p class="field-hint">Bis zu 12 Fotos. Bilder werden automatisch verkleinert und mit dem Entwurf gespeichert.</p>
           <p id="photo-empty" class="photo-empty">Noch keine Fotos hinzugefügt.</p>
@@ -224,8 +222,8 @@
             </optgroup>
           </select>
         </label>
-        <label class="row-detail">Bereich / freie Ergänzung</label>
-        <textarea name="area[]" rows="2" aria-label="Bereich / freie Ergänzung" placeholder="Bereich, Wegabschnitt oder ergänzende Beschreibung"></textarea>
+        <label class="row-detail area-label">Bereich</label>
+        <textarea name="area[]" rows="2" aria-label="Bereich" placeholder="Bereich, Wegabschnitt oder ergänzende Beschreibung"></textarea>
         <label class="quantity-field row-detail" hidden><span class="quantity-label">Menge</span>
           <input name="quantity[]" inputmode="decimal" placeholder="Menge">
         </label>
@@ -240,7 +238,7 @@
     </tr>
   </template>
 
-  <script src="photos.js?v=13"></script>
-  <script src="app.js?v=13"></script>
+  <script src="photos.js?v=14"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>
