@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005f73">
   <title>Abnahmedokumentation – Streckenpflegearbeiten – Rahmenvereinbarung 2023–2028 WEST</title>
-  <link rel="stylesheet" href="styles.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
   <main>
@@ -14,8 +14,8 @@
         <p><strong>Gemeinsam arbeiten – ohne Anmeldung</strong><br>Entwurf speichern, Datei weitergeben und am anderen Gerät hier öffnen. Eingaben, Unterschriften und Fotos sind in der Datei enthalten.</p>
         <button type="button" class="button button-secondary" id="open-draft">Entwurf öffnen</button>
         <button type="button" class="button button-secondary" id="save-draft">Entwurf speichern</button>
-        <button type="button" class="button button-primary" id="share-draft" aria-expanded="false" aria-controls="share-options">Entwurf teilen</button>
-        <div id="share-options" hidden><button type="button" class="button button-secondary" id="share-native">Datei über Gerät teilen</button><button type="button" class="button button-secondary" id="share-whatsapp">WhatsApp</button><button type="button" class="button button-secondary" id="share-email">E-Mail</button><p>Über die Gerätefreigabe lässt sich die Entwurfsdatei direkt an eine unterstützte App übergeben. Bei WhatsApp oder E-Mail wird die Datei heruntergeladen: Bitte selbst als Anhang hinzufügen.</p></div>
+        <button type="button" class="button button-primary" id="share-draft">Entwurf per E-Mail teilen</button>
+        <p class="email-share-hint">E-Mail mit beigefügter Entwurfsdatei herunterladen, im Mailprogramm öffnen und versenden.</p>
         <input type="file" id="draft-file" accept=".json,application/json" hidden>
         <p id="draft-status" role="status" aria-live="polite">Entwürfe und PDFs können jederzeit gespeichert werden – auch ohne digitale Unterschrift zum Unterschreiben auf Papier.</p>
       </div>
@@ -244,9 +244,9 @@
     </tr>
   </template>
 
-  <script src="photos.js?v=17"></script>
-  <script src="service-picker.js?v=17"></script>
-  <script src="app.js?v=17"></script>
-  <script src="share.js?v=17"></script>
+  <script src="photos.js?v=18"></script>
+  <script src="service-picker.js?v=18"></script>
+  <script src="app.js?v=18"></script>
+  <script src="share.js?v=18"></script>
 </body>
 </html>

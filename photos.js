@@ -10,7 +10,7 @@ const photoManager = (() => {
   const message = text => { status.textContent = text; };
   function lock(value) {
     busy = value;
-    document.querySelectorAll('#photo-select, #share-draft, #share-native, #share-whatsapp, #share-email, #save-draft, #open-draft, #reset-form, [type="submit"]').forEach(button => { button.disabled = value; });
+    document.querySelectorAll('#photo-select, #share-draft, #save-draft, #open-draft, #reset-form, [type="submit"]').forEach(button => { button.disabled = value; });
     grid.querySelectorAll('button, input').forEach(control => { control.disabled = value; });
     include.disabled = value;
   }

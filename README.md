@@ -58,6 +58,6 @@ Der untere Seitenrand ist im Drucklayout auf 0 gesetzt, um die automatisch ergä
 
 ## Entwurf teilen
 
-„Entwurf teilen“ bietet die Gerätefreigabe (sofern Dateifreigabe unterstützt wird), WhatsApp und E-Mail. Gerätefreigabe übergibt die JSON-Datei einschließlich Fotos. WhatsApp-/mailto-Links können keine lokalen Anhänge setzen: Die Datei wird daher heruntergeladen und muss vom Benutzer angehängt werden. Es wird kein Empfänger vorgegeben und keine Nachricht automatisch versendet.
+„Entwurf per E-Mail teilen“ erzeugt lokal eine EML-Datei mit dem vorgegebenen Nachrichtentext und der vollständigen JSON-Entwurfsdatei als MIME-Anhang (einschließlich Fotos). Die EML-Datei wird im Mailprogramm geöffnet. Empfänger und Versand erfolgen durch den Benutzer. X-Unsent kennzeichnet die Nachricht als Entwurf; Programme ohne Unterstützung können sie stattdessen weiterleiten. Die direkte Gerätefreigabe und WhatsApp wurden entfernt. Kein Upload, kein automatischer Versand und keine automatische Steuerung des Mailprogramms.
 
 Der aktuelle Standortname lautet Maschinenring Schärding; historische Entwürfe behalten ihre bisherigen Namen.

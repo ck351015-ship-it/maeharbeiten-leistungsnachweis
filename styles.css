@@ -411,8 +411,6 @@ button:disabled { opacity: .55; cursor: wait; }
 .master-data { align-items: start; }
 .master-data > label { display: grid; grid-template-rows: minmax(18px, auto) auto; gap: 6px; align-content: start; }
 .master-data .field-label { display: block; line-height: 18px; }
-#share-options { padding: 12px; margin: 8px 0; border: 1px solid var(--line); border-radius: 8px; background: white; }
-#share-options p { margin: 4px 0 0; font-size: 12px; }
 .correction-note { margin: 16px 0; padding: 12px 15px; border-left: 3px solid var(--brand); background: var(--brand-light); font-size: 13px; line-height: 1.5; }
 @media print {
   /* No bottom page-margin area for browser-generated URL footers. */

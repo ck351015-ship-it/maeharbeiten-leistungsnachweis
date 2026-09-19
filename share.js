@@ -1,45 +1,62 @@
-// Only explicit user clicks open a share destination; no recipient is preselected.
-(() => {
-  const toggle = document.querySelector('#share-draft');
-  const panel = document.querySelector('#share-options');
-  const nativeButton = document.querySelector('#share-native');
-  const toolUrl = 'https://ck351015-ship-it.github.io/maeharbeiten-leistungsnachweis/';
-  const text = 'Bitte die beigefügte Abnahmedokumentation prüfen und unterfertigen. Die Entwurfsdatei über „Entwurf öffnen“ laden: ' + toolUrl;
-  nativeButton.hidden = !navigator.share || !navigator.canShare;
-  toggle.onclick = () => {
-    panel.hidden = !panel.hidden;
-    toggle.setAttribute('aria-expanded', String(!panel.hidden));
-  };
-  let sharing = false;
-  async function share(method) {
-    if (sharing) return;
-    let file;
-    try { file = createDraftFile(); }
-    catch (error) { showStatus('Entwurf konnte nicht geteilt werden. ' + error.message); return; }
-    if (method === 'native') {
-      if (!navigator.canShare?.({ files: [file] })) {
-        showStatus('Dieses Gerät kann die Entwurfsdatei nicht direkt teilen. Bitte WhatsApp oder E-Mail wählen und die heruntergeladene Datei anhängen.');
-        return;
-      }
-      sharing = true;
-      nativeButton.disabled = true;
-      try {
-        await navigator.share({ files: [file], title: 'Abnahmedokumentation', text });
-        // Sharing does not guarantee a local backup; retain the unsaved-change warning.
-        showStatus('Entwurf an die Gerätefreigabe übergeben. Bitte den Versand in der gewählten App abschließen und bei Bedarf zusätzlich speichern.');
-      } catch (error) {
-        showStatus(error.name === 'AbortError' ? 'Teilen abgebrochen. Die Eingaben bleiben erhalten.' : 'Teilen nicht möglich. Bitte WhatsApp oder E-Mail wählen und die Entwurfsdatei als Anhang hinzufügen.');
-      } finally { sharing = false; nativeButton.disabled = false; }
-      return;
-    }
-    // mailto and WhatsApp links cannot attach local files. Download the same draft
-    // and clearly ask the user to attach it, rather than sharing only the form URL.
-    if (method === 'whatsapp') window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener,noreferrer');
-    downloadDraftFile(file);
-    if (method === 'email') window.location.href = 'mailto:?subject=' + encodeURIComponent('Abnahmedokumentation – Prüfung und Unterfertigung') + '&body=' + encodeURIComponent(text + '\n\nBitte die heruntergeladene JSON-Entwurfsdatei als Anhang hinzufügen.');
-    showStatus('Entwurfsdatei heruntergeladen: ' + file.name + '. Bitte diese Datei in ' + (method === 'email' ? 'der E-Mail' : 'WhatsApp') + ' als Anhang hinzufügen; der Link allein enthält keine Eingaben.');
+// Build a complete MIME email locally. No draft content is uploaded or sent.
+function emailBase64(bytes) {
+  // Chunks divisible by three avoid intermediate base64 padding and large spreads.
+  const chunks = [];
+  for (let offset = 0; offset < bytes.length; offset += 24576) {
+    chunks.push(btoa(String.fromCharCode(...bytes.subarray(offset, offset + 24576))));
   }
-  nativeButton.onclick = () => share('native');
-  document.querySelector('#share-whatsapp').onclick = () => share('whatsapp');
-  document.querySelector('#share-email').onclick = () => share('email');
+  return chunks.join('').match(/.{1,76}/g)?.join('\r\n') || '';
+}
+async function buildDraftEmail(file) {
+  const boundary = 'viadonau-' + crypto.randomUUID();
+  const filename = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const body = 'Anbei übersende ich Ihnen eine Abnahmedokumentation zur Streckenpflege mit der Bitte um finale Unterfertigung und um Übermittlung des unterfertigten PDF.\r\n\r\nDie Entwurfsdatei über „Entwurf öffnen“ laden: https://ck351015-ship-it.github.io/maeharbeiten-leistungsnachweis/';
+  const attachment = emailBase64(new Uint8Array(await file.arrayBuffer()));
+  const content = [
+    'X-Unsent: 1',
+    'To: ',
+    'Subject: Abnahmedokumentation Streckenpflege - Unterfertigung',
+    'Date: ' + new Date().toUTCString(),
+    'MIME-Version: 1.0',
+    'Content-Type: multipart/mixed; boundary="' + boundary + '"',
+    '',
+    '--' + boundary,
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    emailBase64(new TextEncoder().encode(body)),
+    '--' + boundary,
+    'Content-Type: application/json; name="' + filename + '"',
+    'Content-Transfer-Encoding: base64',
+    'Content-Disposition: attachment; filename="' + filename + '"',
+    '',
+    attachment,
+    '--' + boundary + '--',
+    ''
+  ].join('\r\n');
+  return new File([content], filename.replace(/\.json$/i, '') + '.eml', { type: 'message/rfc822' });
+}
+(() => {
+  const button = document.querySelector('#share-draft');
+  let busy = false;
+  button.addEventListener('click', async () => {
+    if (busy) return;
+    busy = true;
+    button.disabled = true;
+    try {
+      const file = createDraftFile();
+      const email = await buildDraftEmail(file);
+      const url = URL.createObjectURL(email);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = email.name;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      showStatus('E-Mail-Datei (.eml) mit JSON-Anhang heruntergeladen. Im Mailprogramm öffnen, Empfänger ergänzen und senden. Falls sie nur als Nachricht angezeigt wird, dort „Weiterleiten“ wählen; der Anhang bleibt enthalten.');
+    } catch (error) {
+      showStatus('E-Mail-Datei konnte nicht erstellt werden. ' + error.message + ' Die Eingaben bleiben erhalten.');
+    } finally { busy = false; button.disabled = false; }
+  });
 })();
