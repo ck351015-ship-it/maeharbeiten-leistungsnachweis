@@ -7,7 +7,26 @@ function emailBase64(bytes) {
   }
   return chunks.join('').match(/.{1,76}/g)?.join('\r\n') || '';
 }
+// Fold UTF-8 encoded words without splitting a Unicode character.
+function encodeEmailSubject(value) {
+  const words = [];
+  let chunk = '';
+  for (const character of value) {
+    if (new TextEncoder().encode(chunk + character).length > 42) {
+      words.push('=?UTF-8?B?' + emailBase64(new TextEncoder().encode(chunk)) + '?=');
+      chunk = '';
+    }
+    chunk += character;
+  }
+  if (chunk) words.push('=?UTF-8?B?' + emailBase64(new TextEncoder().encode(chunk)) + '?=');
+  return words.join('\r\n ');
+}
 async function buildDraftEmail(file) {
+  const { fields } = JSON.parse(await file.text());
+  const details = [fields.cycle, fields.contractor, fields.mrName]
+    .map(value => String(value || '').replace(/[\x00-\x1f\x7f]/g, ' ').replace(/\s+/g, ' ').trim())
+    .filter(Boolean);
+  const subject = ['Abnahmedokumentation Streckenpflege', ...details, 'Unterfertigung'].join(' - ');
   const boundary = 'viadonau-' + crypto.randomUUID();
   const alternativeBoundary = boundary + '-body';
   const filename = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
@@ -17,7 +36,7 @@ async function buildDraftEmail(file) {
   const content = [
     'X-Unsent: 1',
     'To: ',
-    'Subject: Abnahmedokumentation Streckenpflege - Unterfertigung',
+    'Subject: ' + encodeEmailSubject(subject),
     'Date: ' + new Date().toUTCString(),
     'MIME-Version: 1.0',
     'Content-Type: multipart/mixed; boundary="' + boundary + '"',
