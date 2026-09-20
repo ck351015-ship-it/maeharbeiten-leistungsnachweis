@@ -9,8 +9,10 @@ function emailBase64(bytes) {
 }
 async function buildDraftEmail(file) {
   const boundary = 'viadonau-' + crypto.randomUUID();
+  const alternativeBoundary = boundary + '-body';
   const filename = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
   const body = 'Anbei übersende ich Ihnen eine Abnahmedokumentation zur Streckenpflege mit der Bitte um finale Unterfertigung und um Übermittlung des unterfertigten PDF.\r\n\r\nDie Entwurfsdatei über „Entwurf öffnen“ laden: https://ck351015-ship-it.github.io/maeharbeiten-leistungsnachweis/';
+  const htmlBody = '<!doctype html><html lang="de"><head><meta charset="utf-8"></head><body style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000"><p>Anbei übersende ich Ihnen eine Abnahmedokumentation zur Streckenpflege mit der Bitte um finale Unterfertigung und um Übermittlung des unterfertigten PDF.</p><p>Die Entwurfsdatei über „Entwurf öffnen“ laden: <a href="https://ck351015-ship-it.github.io/maeharbeiten-leistungsnachweis/">https://ck351015-ship-it.github.io/maeharbeiten-leistungsnachweis/</a></p></body></html>';
   const attachment = emailBase64(new Uint8Array(await file.arrayBuffer()));
   const content = [
     'X-Unsent: 1',
@@ -21,10 +23,19 @@ async function buildDraftEmail(file) {
     'Content-Type: multipart/mixed; boundary="' + boundary + '"',
     '',
     '--' + boundary,
+    'Content-Type: multipart/alternative; boundary="' + alternativeBoundary + '"',
+    '',
+    '--' + alternativeBoundary,
     'Content-Type: text/plain; charset=UTF-8',
     'Content-Transfer-Encoding: base64',
     '',
     emailBase64(new TextEncoder().encode(body)),
+    '--' + alternativeBoundary,
+    'Content-Type: text/html; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    emailBase64(new TextEncoder().encode(htmlBody)),
+    '--' + alternativeBoundary + '--',
     '--' + boundary,
     'Content-Type: application/json; name="' + filename + '"',
     'Content-Transfer-Encoding: base64',
